@@ -96,6 +96,13 @@ function FichaEntrenador({ entrenador }: { entrenador: EntrenadorTarifas }) {
           </label>
         ))}
       </div>
+
+      {guardado && (
+        <p className="flex items-center gap-1.5 rounded-lg bg-green-50 px-3 py-2 text-sm font-medium text-green-700">
+          <Check className="h-4 w-4" /> Tus tarifas se guardaron correctamente.
+        </p>
+      )}
+
       <button
         onClick={() => guardar.mutate()}
         disabled={guardar.isPending}

@@ -20,8 +20,16 @@ export function LoginPage() {
     });
     setCargando(false);
     if (error) {
-      // Mostramos el mensaje real para no ocultar la causa (config, red, etc.)
-      setError(`${error.message} (status ${error.status ?? '—'})`);
+      const m = error.message.toLowerCase();
+      if (m.includes('invalid login credentials')) {
+        setError('Correo o contraseña incorrectos. Verifica tus datos e inténtalo de nuevo.');
+      } else if (m.includes('email not confirmed')) {
+        setError('Tu correo aún no está confirmado. Revisa tu bandeja o escríbenos por WhatsApp.');
+      } else if (m.includes('failed to fetch') || m.includes('network') || m.includes('fetch')) {
+        setError('No pudimos conectar. Revisa tu conexión a internet e inténtalo de nuevo.');
+      } else {
+        setError('No pudimos iniciar sesión. Inténtalo de nuevo en un momento.');
+      }
       return;
     }
     navigate('/');

@@ -3,6 +3,7 @@ import { Inbox, Loader2, Check, X, CalendarCheck } from 'lucide-react';
 import {
   listarSolicitudes,
   actualizarEstadoReserva,
+  MODALIDADES_RESERVA,
   type ReservaConDatos,
 } from '../api/reservas.api';
 import type { EstadoReserva } from '../../../types/database.types';
@@ -95,6 +96,9 @@ function Fila({
           <p className="text-xs capitalize text-slate-400">
             {fecha} · {r.hora_inicio.slice(0, 5)}–{r.hora_fin.slice(0, 5)}
             {r.sede ? ` · ${r.sede.nombre}` : ''}
+          </p>
+          <p className="mt-0.5 text-xs font-medium text-brand-600">
+            {MODALIDADES_RESERVA.find((m) => m.valor === r.modalidad)?.etiqueta ?? 'Solo (1)'}
           </p>
         </div>
         <Badge variante={BADGE[r.estado].v}>{BADGE[r.estado].t}</Badge>

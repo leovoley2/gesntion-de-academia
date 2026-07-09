@@ -1,13 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
-import { CalendarDays, Clock, Loader2, CheckCircle2, Send } from 'lucide-react';
-import { obtenerDisponibilidad, crearReserva, type Bloque } from '../api/reservas.api';
+import { CalendarDays, Clock, Loader2, CheckCircle2, Send, Users } from 'lucide-react';
+import {
+  obtenerDisponibilidad,
+  crearReserva,
+  precioModalidad,
+  MODALIDADES_RESERVA,
+  type Bloque,
+} from '../api/reservas.api';
+import type { ModalidadPersonalizada } from '../../../types/database.types';
 
 interface Props {
   alumnoId: string;
   entrenadorId: string;
   entrenadorNombre?: string;
   sedeId: string;
-  tarifa?: number;
+  tarifas?: { modalidad: string; precio_por_atleta: number }[];
   onReservaCreada?: () => void;
 }
 
@@ -16,15 +23,18 @@ export function CalendarioReservaPersonalizada({
   entrenadorId,
   entrenadorNombre,
   sedeId,
-  tarifa = 0,
+  tarifas = [],
   onReservaCreada,
 }: Props) {
   const [bloques, setBloques] = useState<Bloque[]>([]);
   const [cargando, setCargando] = useState(true);
   const [seleccion, setSeleccion] = useState<Bloque | null>(null);
+  const [modalidad, setModalidad] = useState<ModalidadPersonalizada>('individual');
   const [enviando, setEnviando] = useState(false);
   const [exito, setExito] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const precio = precioModalidad(tarifas, modalidad);
 
   function cargar() {
     setCargando(true);
@@ -58,7 +68,7 @@ export function CalendarioReservaPersonalizada({
     setEnviando(true);
     setError(null);
     try {
-      await crearReserva({ alumnoId, entrenadorId, sedeId, bloque: seleccion });
+      await crearReserva({ alumnoId, entrenadorId, sedeId, bloque: seleccion, modalidad });
       setExito(true);
       setSeleccion(null);
       cargar();
@@ -106,13 +116,45 @@ export function CalendarioReservaPersonalizada({
 
   return (
     <div className="mx-auto w-full max-w-md px-3 pb-32">
+      {/* Selector de modalidad: solo / dúo / grupo */}
+      <section className="pt-4">
+        <h2 className="mb-1 flex items-center gap-2 text-lg font-bold text-slate-800">
+          <Users className="h-5 w-5 text-brand-600" /> ¿Vas solo o en grupo?
+        </h2>
+        <p className="mb-3 text-xs text-slate-400">
+          Elige la modalidad. El precio es por persona.
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {MODALIDADES_RESERVA.map((m) => {
+            const p = precioModalidad(tarifas, m.valor);
+            const activo = modalidad === m.valor;
+            return (
+              <button
+                key={m.valor}
+                onClick={() => setModalidad(m.valor)}
+                disabled={p === 0}
+                className={`rounded-xl border p-3 text-left transition disabled:opacity-40 ${
+                  activo
+                    ? 'border-brand-600 bg-brand-50 text-brand-700'
+                    : 'border-slate-200 bg-white text-slate-700'
+                }`}
+              >
+                <p className="text-sm font-semibold">{m.etiqueta}</p>
+                <p className="text-xs text-slate-400">{m.detalle}</p>
+                {p > 0 && <p className="mt-1 text-sm font-bold text-brand-700">S/ {p.toFixed(0)}</p>}
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
       <div className="flex items-center justify-between py-4">
         <h2 className="flex items-center gap-2 text-lg font-bold text-slate-800">
           <CalendarDays className="h-5 w-5 text-brand-600" /> Elige tu horario
         </h2>
-        {tarifa > 0 && (
+        {precio > 0 && (
           <span className="rounded-full bg-brand-50 px-3 py-1 text-sm font-semibold text-brand-700">
-            S/ {tarifa.toFixed(0)} / sesión
+            S/ {precio.toFixed(0)} / sesión
           </span>
         )}
       </div>
@@ -169,7 +211,9 @@ export function CalendarioReservaPersonalizada({
                 month: 'long',
               })}{' '}
               · {seleccion.hora_inicio.slice(0, 5)}–{seleccion.hora_fin.slice(0, 5)}
-              {tarifa > 0 && <span className="text-brand-700"> · S/ {tarifa.toFixed(0)}</span>}
+              {' · '}
+              {MODALIDADES_RESERVA.find((m) => m.valor === modalidad)?.etiqueta}
+              {precio > 0 && <span className="text-brand-700"> · S/ {precio.toFixed(0)}</span>}
             </p>
             <button
               onClick={confirmar}

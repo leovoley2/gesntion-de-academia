@@ -124,6 +124,7 @@ export type ClaseReserva = {
   hora_fin: string;
   estado: EstadoReserva;
   creada_en: string;
+  modalidad: ModalidadPersonalizada;
 }
 
 // Tipo genérico mínimo para que createClient<Database> compile.

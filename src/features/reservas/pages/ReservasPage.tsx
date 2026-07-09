@@ -6,7 +6,7 @@ import { CalendarioDisponibilidad } from '../components/CalendarioDisponibilidad
 import { CalendarioReservaPersonalizada } from '../components/CalendarioReservaPersonalizada';
 import { SolicitudesReserva } from '../components/SolicitudesReserva';
 import { MisReservas } from '../components/MisReservas';
-import { listarEntrenadores, tarifaIndividual } from '../api/reservas.api';
+import { listarEntrenadores } from '../api/reservas.api';
 import { listarSedes } from '../../sedes/api/sedes.api';
 
 export function ReservasPage() {
@@ -93,7 +93,7 @@ function ReservaAlumno({ alumnoId }: { alumnoId: string }) {
           entrenadorId={entrenadorId}
           entrenadorNombre={entrenadorSel?.nombre_completo}
           sedeId={sedeId}
-          tarifa={tarifaIndividual(entrenadorSel)}
+          tarifas={entrenadorSel?.tarifas ?? []}
           onReservaCreada={() => qc.invalidateQueries({ queryKey: ['mis-reservas', alumnoId] })}
         />
       ) : (

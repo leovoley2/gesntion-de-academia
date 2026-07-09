@@ -1,9 +1,34 @@
 import { supabase } from '../../../lib/supabaseClient';
-import type { Perfil, TarifaEntrenador } from '../../../types/database.types';
+import type {
+  ModalidadPersonalizada,
+  Perfil,
+  TarifaEntrenador,
+} from '../../../types/database.types';
 import { isoLocal } from '../../../utils/fechas';
 
 export interface EntrenadorReserva extends Perfil {
   tarifas: Pick<TarifaEntrenador, 'modalidad' | 'precio_por_atleta'>[];
+}
+
+/** Modalidades de clase personalizada que el alumno puede elegir al reservar. */
+export const MODALIDADES_RESERVA: {
+  valor: ModalidadPersonalizada;
+  etiqueta: string;
+  detalle: string;
+}[] = [
+  { valor: 'individual', etiqueta: 'Solo (1)', detalle: 'Solo tú, sesión exclusiva' },
+  { valor: 'duo', etiqueta: 'Dúo (2)', detalle: 'Tú y 1 más · precio por persona' },
+  { valor: 'grupo3', etiqueta: 'Grupo (3)', detalle: '3 personas · precio por persona' },
+  { valor: 'grupo4', etiqueta: 'Grupo (4)', detalle: '4 personas · precio por persona' },
+];
+
+/** Precio por atleta de una modalidad según las tarifas del entrenador. */
+export function precioModalidad(
+  tarifas: { modalidad: string; precio_por_atleta: number }[] | undefined,
+  modalidad: ModalidadPersonalizada
+): number {
+  const t = tarifas?.find((x) => x.modalidad === modalidad);
+  return t ? Number(t.precio_por_atleta) : 0;
 }
 
 /**
@@ -56,6 +81,7 @@ interface CrearReservaParams {
   entrenadorId: string;
   sedeId: string;
   bloque: Bloque;
+  modalidad: ModalidadPersonalizada;
 }
 
 import type { ClaseReserva, EstadoReserva } from '../../../types/database.types';
@@ -113,7 +139,13 @@ export async function actualizarEstadoReserva(id: string, estado: EstadoReserva)
 }
 
 /** Crea una solicitud de reserva en estado 'pendiente'. */
-export async function crearReserva({ alumnoId, entrenadorId, sedeId, bloque }: CrearReservaParams) {
+export async function crearReserva({
+  alumnoId,
+  entrenadorId,
+  sedeId,
+  bloque,
+  modalidad,
+}: CrearReservaParams) {
   const { error } = await supabase.from('clases_personalizadas_reservas').insert({
     alumno_id: alumnoId,
     entrenador_id: entrenadorId,
@@ -121,6 +153,7 @@ export async function crearReserva({ alumnoId, entrenadorId, sedeId, bloque }: C
     fecha: bloque.fecha,
     hora_inicio: bloque.hora_inicio,
     hora_fin: bloque.hora_fin,
+    modalidad,
     estado: 'pendiente',
   });
   if (error) {

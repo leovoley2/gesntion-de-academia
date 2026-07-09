@@ -47,7 +47,7 @@ export function CalendarioDisponibilidad({ entrenadorId }: Props) {
   const generar = useMutation({
     mutationFn: (p: ParamsLote) => crearBloquesLote(p),
     onSuccess: (n) => {
-      setAviso(`${n} bloque(s) generado(s).`);
+      setAviso(`✓ Se generaron ${n} horario(s) correctamente.`);
       qc.invalidateQueries({ queryKey: ['disponibilidad', entrenadorId] });
     },
     onError: (e: Error) => setAviso(`Error: ${e.message}`),
@@ -56,12 +56,20 @@ export function CalendarioDisponibilidad({ entrenadorId }: Props) {
   const toggle = useMutation({
     mutationFn: ({ id, habilitado }: { id: string; habilitado: boolean }) =>
       toggleBloque(id, habilitado),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['disponibilidad', entrenadorId] }),
+    onSuccess: (_d, v) => {
+      setAviso(v.habilitado ? '✓ Horario habilitado.' : '✓ Horario bloqueado.');
+      qc.invalidateQueries({ queryKey: ['disponibilidad', entrenadorId] });
+    },
+    onError: (e: Error) => setAviso(`Error: ${e.message}`),
   });
 
   const borrar = useMutation({
     mutationFn: eliminarBloque,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['disponibilidad', entrenadorId] }),
+    onSuccess: () => {
+      setAviso('✓ Horario eliminado.');
+      qc.invalidateQueries({ queryKey: ['disponibilidad', entrenadorId] });
+    },
+    onError: (e: Error) => setAviso(`Error: ${e.message}`),
   });
 
   const porFecha = useMemo(() => {

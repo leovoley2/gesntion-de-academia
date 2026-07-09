@@ -11,6 +11,7 @@ function formatearFecha(iso: string): string {
   return new Date(iso + 'T00:00:00').toLocaleDateString('es-PE', {
     day: 'numeric',
     month: 'long',
+    year: 'numeric',
   });
 }
 
@@ -84,19 +85,38 @@ export function DashboardAlumno() {
             </p>
           </div>
         ) : usaCreditos(membresia.tipo_membresia) ? (
-          <p className="mt-2 text-3xl font-bold text-slate-800">
-            {membresia.clases_disponibles}
-            <span className="text-base font-normal text-slate-400"> clases disponibles</span>
-          </p>
-        ) : (
-          <p className="mt-2 text-xl font-bold capitalize text-slate-800">
-            Plan {membresia.tipo_membresia}
-            {membresia.fecha_fin && (
-              <span className="block text-xs font-normal text-slate-400">
-                Vigente hasta {formatearFecha(membresia.fecha_fin)}
+          <div className="mt-2">
+            <p className="text-3xl font-bold text-slate-800">
+              {membresia.clases_disponibles}
+              <span className="text-base font-normal text-slate-400"> clases disponibles</span>
+            </p>
+            <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-slate-500">
+              <span>
+                Inicio: <b className="text-slate-700">{formatearFecha(membresia.fecha_inicio)}</b>
               </span>
-            )}
-          </p>
+              {membresia.fecha_fin && (
+                <span>
+                  Vence: <b className="text-slate-700">{formatearFecha(membresia.fecha_fin)}</b>
+                </span>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="mt-2">
+            <p className="text-xl font-bold capitalize text-slate-800">
+              Plan {membresia.tipo_membresia}
+            </p>
+            <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-slate-500">
+              <span>
+                Inicio: <b className="text-slate-700">{formatearFecha(membresia.fecha_inicio)}</b>
+              </span>
+              {membresia.fecha_fin && (
+                <span>
+                  Vence: <b className="text-slate-700">{formatearFecha(membresia.fecha_fin)}</b>
+                </span>
+              )}
+            </div>
+          </div>
         )}
       </div>
 
