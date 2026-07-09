@@ -1,0 +1,12 @@
+# Configuración para desplegar en Netlify.
+# (Si usas Vercel, ese lee vercel.json; puedes ignorar este archivo.)
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA: todas las rutas sirven index.html para que el enrutado del cliente
+# funcione al abrir enlaces directos (/registro, /terminos, etc.).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
