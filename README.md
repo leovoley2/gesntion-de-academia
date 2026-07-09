@@ -80,3 +80,4 @@ src/
 - Marcar `asistio` descuenta crédito; corregir la marca lo repone. Si el alumno es de plan mensual (sin paquete), no se bloquea nada.
 - Doble reserva del mismo bloque bloqueada por índice único (la app muestra "Ese horario ya fue reservado").
 - Un usuario NO puede cambiarse su propio rol (trigger anti-escalada).
+# gesntion-de-academia
