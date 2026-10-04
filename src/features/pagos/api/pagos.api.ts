@@ -46,23 +46,25 @@ export interface DatosPago {
   matricula_id?: string | null;
 }
 
+/** Sube el comprobante a la carpeta del alumno en Storage; devuelve su ruta (o null si no hay). */
+export async function subirComprobante(alumnoId: string, archivo: File | null | undefined): Promise<string | null> {
+  if (!archivo) return null;
+  // El bucket rechaza >5 MB y tipos no permitidos; avisamos antes de subir.
+  if (archivo.size > 5 * 1024 * 1024) {
+    throw new Error('El comprobante supera los 5 MB. Sube una imagen más ligera o un PDF.');
+  }
+  const ext = archivo.name.split('.').pop() ?? 'jpg';
+  const ruta = `${alumnoId}/${crypto.randomUUID()}.${ext}`;
+  const { error } = await supabase.storage
+    .from('comprobantes')
+    .upload(ruta, archivo, { upsert: false });
+  if (error) throw error;
+  return ruta;
+}
+
 /** Sube el comprobante (si hay) a Storage y registra el pago como 'pendiente'. */
 export async function registrarPago(d: DatosPago): Promise<void> {
-  let comprobante_url: string | null = null;
-
-  if (d.comprobante) {
-    // El bucket rechaza >5 MB y tipos no permitidos; avisamos antes de subir.
-    if (d.comprobante.size > 5 * 1024 * 1024) {
-      throw new Error('El comprobante supera los 5 MB. Sube una imagen más ligera o un PDF.');
-    }
-    const ext = d.comprobante.name.split('.').pop() ?? 'jpg';
-    const ruta = `${d.alumno_id}/${crypto.randomUUID()}.${ext}`;
-    const { error: upErr } = await supabase.storage
-      .from('comprobantes')
-      .upload(ruta, d.comprobante, { upsert: false });
-    if (upErr) throw upErr;
-    comprobante_url = ruta;
-  }
+  const comprobante_url = await subirComprobante(d.alumno_id, d.comprobante);
 
   const { error } = await supabase.from('pagos').insert({
     alumno_id: d.alumno_id,

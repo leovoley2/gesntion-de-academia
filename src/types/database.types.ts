@@ -159,6 +159,25 @@ export interface Database {
         Returns: undefined;
       };
       actualizar_vencimientos: { Args: Record<string, never>; Returns: number };
+      solicitar_ingreso_academia: {
+        Args: {
+          p_plan_id: string;
+          p_horario_ids: string[];
+          p_metodo: MetodoPago;
+          p_comprobante_url?: string | null;
+        };
+        Returns: string;
+      };
+      solicitar_paquete_personalizado: {
+        Args: {
+          p_sesiones: number;
+          p_monto: number;
+          p_concepto: string;
+          p_metodo: MetodoPago;
+          p_comprobante_url?: string | null;
+        };
+        Returns: string;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

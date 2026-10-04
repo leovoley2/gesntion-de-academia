@@ -1,5 +1,5 @@
 import { supabase } from '../../../lib/supabaseClient';
-import { registrarPago } from '../../pagos/api/pagos.api';
+import { subirComprobante } from '../../pagos/api/pagos.api';
 import type {
   MetodoPago,
   ModalidadPersonalizada,
@@ -74,40 +74,19 @@ export interface SolicitudAcademia extends BaseSolicitud {
 /**
  * Crea la solicitud de ingreso a la academia: matrícula 'pendiente' + días
  * elegidos + pago por revisar. El admin la aprueba desde "Nuevos ingresos".
+ * El comprobante se sube primero; el resto lo hace el servidor en una sola
+ * transacción (si algo falla, no queda una solicitud a medias).
  */
 export async function crearSolicitudAcademia(s: SolicitudAcademia): Promise<void> {
-  const { data: matricula, error } = await supabase
-    .from('matriculas_membresias')
-    .insert({
-      alumno_id: s.alumnoId,
-      tipo_membresia: 'mensual',
-      estado: 'pendiente',
-      plan_id: s.plan.id,
-      clases_totales: s.plan.clases_mensuales,
-      clases_disponibles: 0,
-    })
-    .select('id')
-    .single();
-  if (error) throw error;
+  const comprobanteUrl = await subirComprobante(s.alumnoId, s.comprobante);
 
-  const { error: errInsc } = await supabase.from('inscripciones_clase').upsert(
-    s.horarioIds.map((horarioId) => ({
-      horario_clase_id: horarioId,
-      alumno_id: s.alumnoId,
-      matricula_id: matricula.id,
-    })),
-    { onConflict: 'horario_clase_id,alumno_id', ignoreDuplicates: true }
-  );
-  if (errInsc) throw errInsc;
-
-  await registrarPago({
-    alumno_id: s.alumnoId,
-    monto: Number(s.plan.precio_mensual),
-    concepto: `Inscripción · Plan ${s.plan.nombre}`,
-    metodo_pago: s.metodo,
-    comprobante: s.comprobante,
-    matricula_id: matricula.id,
+  const { error } = await supabase.rpc('solicitar_ingreso_academia', {
+    p_plan_id: s.plan.id,
+    p_horario_ids: s.horarioIds,
+    p_metodo: s.metodo,
+    p_comprobante_url: comprobanteUrl,
   });
+  if (error) throw error;
 }
 
 export interface SolicitudPersonalizada extends BaseSolicitud {
@@ -135,25 +114,14 @@ export async function crearSolicitudPersonalizada(s: SolicitudPersonalizada): Pr
   const etiqueta =
     MODALIDADES.find((m) => m.valor === s.modalidad)?.etiqueta ?? s.modalidad;
 
-  const { data: matricula, error } = await supabase
-    .from('matriculas_membresias')
-    .insert({
-      alumno_id: s.alumnoId,
-      tipo_membresia: 'personalizado',
-      estado: 'pendiente',
-      clases_totales: s.sesiones,
-      clases_disponibles: s.sesiones,
-    })
-    .select('id')
-    .single();
-  if (error) throw error;
+  const comprobanteUrl = await subirComprobante(s.alumnoId, s.comprobante);
 
-  await registrarPago({
-    alumno_id: s.alumnoId,
-    monto: s.precioTotal,
-    concepto: `Paquete ${s.sesiones} sesiones ${etiqueta} · ${s.entrenador.nombre_completo}`,
-    metodo_pago: s.metodo,
-    comprobante: s.comprobante,
-    matricula_id: matricula.id,
+  const { error } = await supabase.rpc('solicitar_paquete_personalizado', {
+    p_sesiones: s.sesiones,
+    p_monto: s.precioTotal,
+    p_concepto: `Paquete ${s.sesiones} sesiones ${etiqueta} · ${s.entrenador.nombre_completo}`,
+    p_metodo: s.metodo,
+    p_comprobante_url: comprobanteUrl,
   });
+  if (error) throw error;
 }
