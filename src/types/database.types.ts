@@ -125,6 +125,8 @@ export type ClaseReserva = {
   estado: EstadoReserva;
   creada_en: string;
   modalidad: ModalidadPersonalizada;
+  /** Cobro de sesión suelta generado al confirmar sin créditos (null si consumió crédito). */
+  pago_id?: string | null;
 }
 
 // Tipo genérico mínimo para que createClient<Database> compile.
