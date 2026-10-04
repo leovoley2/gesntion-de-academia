@@ -170,9 +170,9 @@ export interface Database {
       };
       solicitar_paquete_personalizado: {
         Args: {
+          p_entrenador_id: string;
+          p_modalidad: ModalidadPersonalizada;
           p_sesiones: number;
-          p_monto: number;
-          p_concepto: string;
           p_metodo: MetodoPago;
           p_comprobante_url?: string | null;
         };

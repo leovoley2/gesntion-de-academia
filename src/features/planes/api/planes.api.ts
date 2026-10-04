@@ -93,10 +93,13 @@ export interface SolicitudPersonalizada extends BaseSolicitud {
   entrenador: EntrenadorConTarifas;
   modalidad: ModalidadPersonalizada;
   sesiones: number;
-  precioTotal: number;
 }
 
-/** Precio total del paquete por atleta (tarifa × sesiones, menos descuento). */
+/**
+ * Precio total del paquete por atleta (tarifa × sesiones, menos descuento).
+ * Solo para mostrarlo: el monto que se cobra lo calcula el servidor con la
+ * misma fórmula (`precio_paquete` en la BD).
+ */
 export function precioPaquete(
   entrenador: EntrenadorConTarifas,
   modalidad: ModalidadPersonalizada,
@@ -106,20 +109,19 @@ export function precioPaquete(
   if (!tarifa) return 0;
   const paquete = PAQUETES.find((p) => p.sesiones === sesiones);
   const bruto = Number(tarifa.precio_por_atleta) * sesiones;
-  return Math.round(bruto * (1 - (paquete?.descuento ?? 0)));
+  // Descuento en % entero para evitar errores de coma flotante al redondear.
+  const pct = Math.round((paquete?.descuento ?? 0) * 100);
+  return Math.round((bruto * (100 - pct)) / 100);
 }
 
-/** Solicitud de paquete personalizado: créditos que se activan al aprobar. */
+/** Solicitud de paquete personalizado: créditos que se activan al aprobar. El monto lo fija el servidor. */
 export async function crearSolicitudPersonalizada(s: SolicitudPersonalizada): Promise<void> {
-  const etiqueta =
-    MODALIDADES.find((m) => m.valor === s.modalidad)?.etiqueta ?? s.modalidad;
-
   const comprobanteUrl = await subirComprobante(s.alumnoId, s.comprobante);
 
   const { error } = await supabase.rpc('solicitar_paquete_personalizado', {
+    p_entrenador_id: s.entrenador.id,
+    p_modalidad: s.modalidad,
     p_sesiones: s.sesiones,
-    p_monto: s.precioTotal,
-    p_concepto: `Paquete ${s.sesiones} sesiones ${etiqueta} · ${s.entrenador.nombre_completo}`,
     p_metodo: s.metodo,
     p_comprobante_url: comprobanteUrl,
   });

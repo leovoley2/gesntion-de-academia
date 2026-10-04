@@ -63,7 +63,6 @@ export function InscripcionPage() {
           entrenador,
           modalidad,
           sesiones,
-          precioTotal: precioPaquete(entrenador, modalidad, sesiones),
           metodo,
           comprobante,
         });
