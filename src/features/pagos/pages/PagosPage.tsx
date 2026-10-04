@@ -29,6 +29,8 @@ export function PagosPage() {
   const qc = useQueryClient();
   const [form, setForm] = useState<DatosPago>(VACIO);
   const [error, setError] = useState<string | null>(null);
+  // Método elegido al aprobar cada pago pendiente (por defecto, el que trae el pago).
+  const [metodoAprobar, setMetodoAprobar] = useState<Record<string, MetodoPago>>({});
 
   // Panel siempre fresco: trae lo último al abrir y al volver a la pestaña,
   // para no perderse pagos que el alumno registre con el panel ya abierto.
@@ -77,6 +79,7 @@ export function PagosPage() {
       qc.invalidateQueries({ queryKey: ['pagos'] });
       qc.invalidateQueries({ queryKey: ['ingresos-mes'] });
     },
+    onError: (e: Error) => alert(`No se pudo aprobar: ${e.message}`),
   });
 
   function enviar(e: React.FormEvent) {
@@ -226,13 +229,31 @@ export function PagosPage() {
                     </button>
                   )}
                   {p.estado === 'pendiente' && (
-                    <button
-                      onClick={() => aprobar.mutate(p.id)}
-                      disabled={aprobar.isPending}
-                      className="ml-auto flex items-center gap-1 rounded-lg bg-green-500 px-3 py-1.5 text-xs font-semibold text-white active:scale-95 disabled:opacity-60"
-                    >
-                      <Check className="h-3.5 w-3.5" /> Aprobar
-                    </button>
+                    <div className="ml-auto flex items-center gap-2">
+                      <select
+                        aria-label="Método con el que se cobró"
+                        value={metodoAprobar[p.id] ?? p.metodo_pago}
+                        onChange={(e) =>
+                          setMetodoAprobar({ ...metodoAprobar, [p.id]: e.target.value as MetodoPago })
+                        }
+                        className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs text-slate-700"
+                      >
+                        {METODOS.map((m) => (
+                          <option key={m} value={m}>
+                            {m}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={() =>
+                          aprobar.mutate({ id: p.id, metodo: metodoAprobar[p.id] ?? p.metodo_pago })
+                        }
+                        disabled={aprobar.isPending}
+                        className="flex items-center gap-1 rounded-lg bg-green-500 px-3 py-1.5 text-xs font-semibold text-white active:scale-95 disabled:opacity-60"
+                      >
+                        <Check className="h-3.5 w-3.5" /> Aprobar
+                      </button>
+                    </div>
                   )}
                 </div>
               </li>

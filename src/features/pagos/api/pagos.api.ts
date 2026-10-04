@@ -84,8 +84,15 @@ export async function registrarPago(d: DatosPago): Promise<void> {
   if (error) throw error;
 }
 
-export async function aprobarPago(id: string): Promise<void> {
-  const { error } = await supabase.from('pagos').update({ estado: 'aprobado' }).eq('id', id);
+/**
+ * Aprueba un pago fijando el método con el que realmente se cobró (los cobros
+ * automáticos de sesión suelta nacen con 'Efectivo' por defecto).
+ */
+export async function aprobarPago({ id, metodo }: { id: string; metodo: MetodoPago }): Promise<void> {
+  const { error } = await supabase
+    .from('pagos')
+    .update({ estado: 'aprobado', metodo_pago: metodo })
+    .eq('id', id);
   if (error) throw error;
 }
 
