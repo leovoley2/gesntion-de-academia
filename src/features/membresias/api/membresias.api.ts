@@ -5,20 +5,23 @@ import type {
   TipoMembresia,
   EstadoMembresia,
 } from '../../../types/database.types';
+import { rango, type Pagina } from '../../../lib/paginacion';
 
 export interface MembresiaConAlumno extends MatriculaMembresia {
   alumno: { nombre_completo: string } | null;
 }
 
 /** Membresías con el nombre del alumno embebido (vía FK alumno_id). */
-export async function listarMembresias(): Promise<MembresiaConAlumno[]> {
-  const { data, error } = await supabase
+export async function listarMembresias(pagina = 0): Promise<Pagina<MembresiaConAlumno>> {
+  const { data, error, count } = await supabase
     .from('matriculas_membresias')
-    .select('*, alumno:perfiles!alumno_id(nombre_completo)')
+    .select('*, alumno:perfiles!alumno_id(nombre_completo)', { count: 'exact' })
     .order('fecha_inicio', { ascending: false })
+    .order('id')
+    .range(...rango(pagina))
     .returns<MembresiaConAlumno[]>();
   if (error) throw error;
-  return data ?? [];
+  return { items: data ?? [], total: count ?? 0 };
 }
 
 /** Alumnos disponibles para asignarles una membresía. */

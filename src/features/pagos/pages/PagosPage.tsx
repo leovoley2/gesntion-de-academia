@@ -12,6 +12,8 @@ import {
 } from '../api/pagos.api';
 import type { MetodoPago } from '../../../types/database.types';
 import { Badge } from '../../../components/ui/Badge';
+import { CargarMas } from '../../../components/ui/CargarMas';
+import { usePaginado } from '../../../lib/paginacion';
 
 const METODOS: MetodoPago[] = ['Yape', 'Plin', 'Transferencia', 'Efectivo'];
 
@@ -30,9 +32,16 @@ export function PagosPage() {
 
   // Panel siempre fresco: trae lo último al abrir y al volver a la pestaña,
   // para no perderse pagos que el alumno registre con el panel ya abierto.
-  const { data: pagos, isLoading, isFetching, refetch } = useQuery({
-    queryKey: ['pagos'],
-    queryFn: listarPagos,
+  const {
+    items: pagos,
+    total,
+    isLoading,
+    isFetching,
+    refetch,
+    hayMas,
+    cargandoMas,
+    cargarMas,
+  } = usePaginado(['pagos'], listarPagos, {
     staleTime: 0,
     refetchOnMount: 'always',
     refetchOnWindowFocus: true,
@@ -174,7 +183,7 @@ export function PagosPage() {
         <div className="mb-3 flex items-center justify-between">
           <h2 className="flex items-center gap-2 font-bold text-slate-800">
             <Wallet className="h-5 w-5 text-brand-600" /> Pagos
-            {pagos && <span className="text-sm font-normal text-slate-400">({pagos.length})</span>}
+            {pagos && <span className="text-sm font-normal text-slate-400">({total})</span>}
           </h2>
           <button
             onClick={actualizar}
@@ -231,6 +240,15 @@ export function PagosPage() {
           </ul>
         ) : (
           <p className="py-8 text-center text-sm text-slate-500">Aún no hay pagos registrados.</p>
+        )}
+        {pagos && (
+          <CargarMas
+            hayMas={hayMas}
+            cargando={cargandoMas}
+            onClick={cargarMas}
+            mostrados={pagos.length}
+            total={total}
+          />
         )}
       </section>
     </div>

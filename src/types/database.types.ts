@@ -161,6 +161,27 @@ export interface Database {
         Returns: undefined;
       };
       actualizar_vencimientos: { Args: Record<string, never>; Returns: number };
+      metricas_admin: {
+        Args: Record<string, never>;
+        Returns: {
+          ingresosMes: number;
+          alumnosActivos: number;
+          membresiasVencidas: number;
+          pagosPendientes: number;
+        };
+      };
+      reporte_mensual: {
+        Args: { p_anio: number; p_mes: number };
+        Returns: {
+          totalAprobado: number;
+          numPagos: number;
+          pendientesMonto: number;
+          numPendientes: number;
+          nuevosAlumnos: number;
+          porMetodo: { metodo: MetodoPago; monto: number }[];
+          porConcepto: { concepto: string; monto: number }[];
+        };
+      };
       solicitar_ingreso_academia: {
         Args: {
           p_plan_id: string;

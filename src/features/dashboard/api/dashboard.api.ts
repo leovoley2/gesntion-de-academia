@@ -1,6 +1,5 @@
 import { supabase } from '../../../lib/supabaseClient';
 import type { MatriculaMembresia } from '../../../types/database.types';
-import { isoLocal } from '../../../utils/fechas';
 
 export interface MetricasAdmin {
   ingresosMes: number;
@@ -9,35 +8,15 @@ export interface MetricasAdmin {
   pagosPendientes: number;
 }
 
+/** Métricas del panel admin, sumadas en la BD (mes en hora de Perú). */
 export async function metricasAdmin(): Promise<MetricasAdmin> {
-  const inicioMes = isoLocal(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
-
-  const [ingresos, activas, vencidas, pendientes] = await Promise.all([
-    supabase.from('pagos').select('monto').eq('estado', 'aprobado').gte('fecha_pago', inicioMes),
-    supabase
-      .from('matriculas_membresias')
-      .select('alumno_id')
-      .eq('estado', 'activa'),
-    supabase
-      .from('matriculas_membresias')
-      .select('id', { count: 'exact', head: true })
-      .eq('estado', 'vencida'),
-    supabase.from('pagos').select('id', { count: 'exact', head: true }).eq('estado', 'pendiente'),
-  ]);
-
-  if (ingresos.error) throw ingresos.error;
-  if (activas.error) throw activas.error;
-  if (vencidas.error) throw vencidas.error;
-  if (pendientes.error) throw pendientes.error;
-
-  const ingresosMes = (ingresos.data ?? []).reduce((s, p) => s + Number(p.monto), 0);
-  const alumnosActivos = new Set((activas.data ?? []).map((m) => m.alumno_id)).size;
-
+  const { data, error } = await supabase.rpc('metricas_admin');
+  if (error) throw error;
   return {
-    ingresosMes,
-    alumnosActivos,
-    membresiasVencidas: vencidas.count ?? 0,
-    pagosPendientes: pendientes.count ?? 0,
+    ingresosMes: Number(data.ingresosMes),
+    alumnosActivos: data.alumnosActivos,
+    membresiasVencidas: data.membresiasVencidas,
+    pagosPendientes: data.pagosPendientes,
   };
 }
 

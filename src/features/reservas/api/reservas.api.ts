@@ -5,6 +5,7 @@ import type {
   TarifaEntrenador,
 } from '../../../types/database.types';
 import { isoLocal } from '../../../utils/fechas';
+import { rango, type Pagina } from '../../../lib/paginacion';
 
 export interface EntrenadorReserva extends Perfil {
   tarifas: Pick<TarifaEntrenador, 'modalidad' | 'precio_por_atleta'>[];
@@ -91,14 +92,18 @@ export interface ReservaConDatos extends ClaseReserva {
   sede: { nombre: string } | null;
 }
 
+const SELECT_SOLICITUD =
+  '*, alumno:perfiles!alumno_id(nombre_completo), sede:sedes_canchas!sede_id(nombre)';
+
 /**
- * Reservas para gestionar. El entrenador ve las suyas; el admin, todas
- * (gobernado por RLS). Por defecto trae las pendientes primero.
+ * Solicitudes pendientes por atender (todas: están acotadas por el límite de
+ * 3 pendientes por alumno). El entrenador ve las suyas; el admin, todas (RLS).
  */
-export async function listarSolicitudes(entrenadorId?: string): Promise<ReservaConDatos[]> {
+export async function listarPendientes(entrenadorId?: string): Promise<ReservaConDatos[]> {
   let q = supabase
     .from('clases_personalizadas_reservas')
-    .select('*, alumno:perfiles!alumno_id(nombre_completo), sede:sedes_canchas!sede_id(nombre)')
+    .select(SELECT_SOLICITUD)
+    .eq('estado', 'pendiente')
     .order('fecha', { ascending: true })
     .order('hora_inicio', { ascending: true });
   if (entrenadorId) q = q.eq('entrenador_id', entrenadorId);
@@ -107,23 +112,46 @@ export async function listarSolicitudes(entrenadorId?: string): Promise<ReservaC
   return data ?? [];
 }
 
+/** Resto de reservas (confirmadas, realizadas, canceladas), paginadas: las más nuevas primero. */
+export async function listarHistorialReservas(
+  entrenadorId: string | undefined,
+  pagina = 0
+): Promise<Pagina<ReservaConDatos>> {
+  let q = supabase
+    .from('clases_personalizadas_reservas')
+    .select(SELECT_SOLICITUD, { count: 'exact' })
+    .neq('estado', 'pendiente');
+  if (entrenadorId) q = q.eq('entrenador_id', entrenadorId);
+  const { data, error, count } = await q
+    .order('fecha', { ascending: false })
+    .order('hora_inicio', { ascending: false })
+    .order('id')
+    .range(...rango(pagina))
+    .returns<ReservaConDatos[]>();
+  if (error) throw error;
+  return { items: data ?? [], total: count ?? 0 };
+}
+
 export interface MiReserva extends ClaseReserva {
   entrenador: { nombre_completo: string } | null;
   sede: { nombre: string } | null;
 }
 
 /** Historial de reservas del propio alumno (las ve por RLS). */
-export async function listarMisReservas(alumnoId: string): Promise<MiReserva[]> {
-  const { data, error } = await supabase
+export async function listarMisReservas(alumnoId: string, pagina = 0): Promise<Pagina<MiReserva>> {
+  const { data, error, count } = await supabase
     .from('clases_personalizadas_reservas')
     .select(
-      '*, entrenador:perfiles!entrenador_id(nombre_completo), sede:sedes_canchas!sede_id(nombre)'
+      '*, entrenador:perfiles!entrenador_id(nombre_completo), sede:sedes_canchas!sede_id(nombre)',
+      { count: 'exact' }
     )
     .eq('alumno_id', alumnoId)
     .order('creada_en', { ascending: false })
+    .order('id')
+    .range(...rango(pagina))
     .returns<MiReserva[]>();
   if (error) throw error;
-  return data ?? [];
+  return { items: data ?? [], total: count ?? 0 };
 }
 
 /**

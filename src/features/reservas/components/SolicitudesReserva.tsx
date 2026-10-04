@@ -1,13 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Inbox, Loader2, Check, X, CalendarCheck } from 'lucide-react';
 import {
-  listarSolicitudes,
+  listarPendientes,
+  listarHistorialReservas,
   actualizarEstadoReserva,
   MODALIDADES_RESERVA,
   type ReservaConDatos,
 } from '../api/reservas.api';
 import type { EstadoReserva } from '../../../types/database.types';
 import { Badge } from '../../../components/ui/Badge';
+import { CargarMas } from '../../../components/ui/CargarMas';
+import { usePaginado } from '../../../lib/paginacion';
 
 interface Props {
   entrenadorId?: string; // si se pasa, filtra por ese entrenador
@@ -24,10 +27,21 @@ export function SolicitudesReserva({ entrenadorId }: Props) {
   const qc = useQueryClient();
   const clave = ['solicitudes', entrenadorId ?? 'todas'];
 
-  const { data: reservas, isLoading } = useQuery({
-    queryKey: clave,
-    queryFn: () => listarSolicitudes(entrenadorId),
+  // Pendientes: todas (acotadas a 3 por alumno). Historial: paginado.
+  const { data: pendientesData, isLoading: cargandoPendientes } = useQuery({
+    queryKey: [...clave, 'pendientes'],
+    queryFn: () => listarPendientes(entrenadorId),
   });
+  const {
+    items: otras,
+    total: totalOtras,
+    isLoading: cargandoHistorial,
+    hayMas,
+    cargandoMas,
+    cargarMas,
+  } = usePaginado([...clave, 'historial'], (pagina) =>
+    listarHistorialReservas(entrenadorId, pagina)
+  );
 
   const cambiar = useMutation({
     mutationFn: ({ id, estado }: { id: string; estado: EstadoReserva }) =>
@@ -36,10 +50,10 @@ export function SolicitudesReserva({ entrenadorId }: Props) {
     onError: (e: Error) => alert(e.message),
   });
 
-  const pendientes = (reservas ?? []).filter((r) => r.estado === 'pendiente');
-  const otras = (reservas ?? []).filter((r) => r.estado !== 'pendiente');
+  const pendientes = pendientesData ?? [];
+  const reservas = [...pendientes, ...(otras ?? [])];
 
-  if (isLoading) {
+  if (cargandoPendientes || cargandoHistorial) {
     return (
       <div className="flex justify-center py-8">
         <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
@@ -58,15 +72,22 @@ export function SolicitudesReserva({ entrenadorId }: Props) {
         )}
       </h2>
 
-      {(reservas ?? []).length === 0 ? (
+      {reservas.length === 0 ? (
         <p className="py-6 text-center text-sm text-slate-500">No hay solicitudes.</p>
       ) : (
         <ul className="space-y-2">
-          {[...pendientes, ...otras].map((r) => (
+          {reservas.map((r) => (
             <Fila key={r.id} r={r} onCambiar={cambiar.mutate} guardando={cambiar.isPending} />
           ))}
         </ul>
       )}
+      <CargarMas
+        hayMas={hayMas}
+        cargando={cargandoMas}
+        onClick={cargarMas}
+        mostrados={otras?.length ?? 0}
+        total={totalOtras}
+      />
     </section>
   );
 }

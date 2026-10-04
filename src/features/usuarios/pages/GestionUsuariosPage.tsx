@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { UserPlus, Loader2, Users, ShieldCheck, Pencil, Trash2, X, Check } from 'lucide-react';
 import {
   listarPerfiles,
@@ -12,6 +12,8 @@ import {
 import type { Perfil, RolUsuario } from '../../../types/database.types';
 import { useAuth } from '../../../context/AuthContext';
 import { Badge } from '../../../components/ui/Badge';
+import { CargarMas } from '../../../components/ui/CargarMas';
+import { usePaginado } from '../../../lib/paginacion';
 
 const ROLES: RolUsuario[] = ['alumno', 'entrenador', 'administrador'];
 
@@ -34,10 +36,14 @@ export function GestionUsuariosPage() {
   const [form, setForm] = useState<NuevoUsuario>(VACIO);
   const [mensaje, setMensaje] = useState<string | null>(null);
 
-  const { data: perfiles, isLoading } = useQuery({
-    queryKey: ['perfiles'],
-    queryFn: listarPerfiles,
-  });
+  const {
+    items: perfiles,
+    total,
+    isLoading,
+    hayMas,
+    cargandoMas,
+    cargarMas,
+  } = usePaginado(['perfiles'], listarPerfiles);
 
   const crear = useMutation({
     mutationFn: crearUsuario,
@@ -130,7 +136,7 @@ export function GestionUsuariosPage() {
       <section>
         <h2 className="mb-3 flex items-center gap-2 font-bold text-slate-800">
           <Users className="h-5 w-5 text-brand-600" /> Usuarios
-          {perfiles && <span className="text-sm font-normal text-slate-400">({perfiles.length})</span>}
+          {perfiles && <span className="text-sm font-normal text-slate-400">({total})</span>}
         </h2>
 
         {isLoading ? (
@@ -143,6 +149,15 @@ export function GestionUsuariosPage() {
               <FilaUsuario key={p.id} perfil={p} />
             ))}
           </ul>
+        )}
+        {perfiles && (
+          <CargarMas
+            hayMas={hayMas}
+            cargando={cargandoMas}
+            onClick={cargarMas}
+            mostrados={perfiles.length}
+            total={total}
+          />
         )}
 
         <p className="mt-3 flex items-start gap-1.5 text-xs text-slate-400">

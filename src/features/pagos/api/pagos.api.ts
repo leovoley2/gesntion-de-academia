@@ -1,29 +1,34 @@
 import { supabase } from '../../../lib/supabaseClient';
 import type { Pago, MetodoPago, Perfil } from '../../../types/database.types';
+import { rango, type Pagina } from '../../../lib/paginacion';
 
 export interface PagoConAlumno extends Pago {
   alumno: { nombre_completo: string } | null;
 }
 
-export async function listarPagos(): Promise<PagoConAlumno[]> {
-  const { data, error } = await supabase
+export async function listarPagos(pagina = 0): Promise<Pagina<PagoConAlumno>> {
+  const { data, error, count } = await supabase
     .from('pagos')
-    .select('*, alumno:perfiles!alumno_id(nombre_completo)')
+    .select('*, alumno:perfiles!alumno_id(nombre_completo)', { count: 'exact' })
     .order('fecha_pago', { ascending: false })
+    .order('id')
+    .range(...rango(pagina))
     .returns<PagoConAlumno[]>();
   if (error) throw error;
-  return data ?? [];
+  return { items: data ?? [], total: count ?? 0 };
 }
 
 /** Pagos del propio alumno (los ve por RLS). */
-export async function listarMisPagos(alumnoId: string): Promise<Pago[]> {
-  const { data, error } = await supabase
+export async function listarMisPagos(alumnoId: string, pagina = 0): Promise<Pagina<Pago>> {
+  const { data, error, count } = await supabase
     .from('pagos')
-    .select('*')
+    .select('*', { count: 'exact' })
     .eq('alumno_id', alumnoId)
-    .order('fecha_pago', { ascending: false });
+    .order('fecha_pago', { ascending: false })
+    .order('id')
+    .range(...rango(pagina));
   if (error) throw error;
-  return data ?? [];
+  return { items: data ?? [], total: count ?? 0 };
 }
 
 export async function listarAlumnosPago(): Promise<Perfil[]> {
@@ -93,15 +98,9 @@ export async function urlComprobante(ruta: string): Promise<string | null> {
   return data.signedUrl;
 }
 
-/** Total de ingresos aprobados del mes en curso. */
+/** Total de ingresos aprobados del mes en curso (sumado en la BD, hora de Perú). */
 export async function ingresosDelMes(): Promise<number> {
-  const ahora = new Date();
-  const inicio = new Date(ahora.getFullYear(), ahora.getMonth(), 1).toISOString();
-  const { data, error } = await supabase
-    .from('pagos')
-    .select('monto')
-    .eq('estado', 'aprobado')
-    .gte('fecha_pago', inicio);
+  const { data, error } = await supabase.rpc('metricas_admin');
   if (error) throw error;
-  return (data ?? []).reduce((sum, p) => sum + Number(p.monto), 0);
+  return Number(data.ingresosMes);
 }

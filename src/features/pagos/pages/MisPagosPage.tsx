@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Wallet, Loader2, Upload, FileText } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { registrarPago, listarMisPagos, urlComprobante } from '../api/pagos.api';
 import type { MetodoPago } from '../../../types/database.types';
 import { Badge } from '../../../components/ui/Badge';
+import { CargarMas } from '../../../components/ui/CargarMas';
+import { usePaginado } from '../../../lib/paginacion';
 
 const METODOS: MetodoPago[] = ['Yape', 'Plin', 'Transferencia', 'Efectivo'];
 
@@ -29,9 +31,14 @@ export function MisPagosPage() {
   const [comprobante, setComprobante] = useState<File | null>(null);
   const [mensaje, setMensaje] = useState<string | null>(null);
 
-  const { data: pagos, isLoading } = useQuery({
-    queryKey: ['mis-pagos', alumnoId],
-    queryFn: () => listarMisPagos(alumnoId),
+  const {
+    items: pagos,
+    total,
+    isLoading,
+    hayMas,
+    cargandoMas,
+    cargarMas,
+  } = usePaginado(['mis-pagos', alumnoId], (pagina) => listarMisPagos(alumnoId, pagina), {
     enabled: !!alumnoId,
   });
 
@@ -188,6 +195,15 @@ export function MisPagosPage() {
           </ul>
         ) : (
           <p className="py-8 text-center text-sm text-slate-500">Aún no has registrado pagos.</p>
+        )}
+        {pagos && (
+          <CargarMas
+            hayMas={hayMas}
+            cargando={cargandoMas}
+            onClick={cargarMas}
+            mostrados={pagos.length}
+            total={total}
+          />
         )}
       </section>
     </div>

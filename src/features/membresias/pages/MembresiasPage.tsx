@@ -12,6 +12,8 @@ import {
 } from '../api/membresias.api';
 import type { TipoMembresia, EstadoMembresia } from '../../../types/database.types';
 import { Badge } from '../../../components/ui/Badge';
+import { CargarMas } from '../../../components/ui/CargarMas';
+import { usePaginado } from '../../../lib/paginacion';
 import { isoLocal } from '../../../utils/fechas';
 
 const hoy = () => isoLocal();
@@ -44,10 +46,14 @@ export function MembresiasPage() {
   const [form, setForm] = useState<DatosMembresia>(VACIO);
   const [error, setError] = useState<string | null>(null);
 
-  const { data: membresias, isLoading } = useQuery({
-    queryKey: ['membresias'],
-    queryFn: listarMembresias,
-  });
+  const {
+    items: membresias,
+    total,
+    isLoading,
+    hayMas,
+    cargandoMas,
+    cargarMas,
+  } = usePaginado(['membresias'], listarMembresias);
   const { data: alumnos } = useQuery({ queryKey: ['alumnos'], queryFn: listarAlumnos });
 
   const crear = useMutation({
@@ -166,7 +172,7 @@ export function MembresiasPage() {
         <h2 className="mb-3 flex items-center gap-2 font-bold text-slate-800">
           <CreditCard className="h-5 w-5 text-brand-600" /> Membresías
           {membresias && (
-            <span className="text-sm font-normal text-slate-400">({membresias.length})</span>
+            <span className="text-sm font-normal text-slate-400">({total})</span>
           )}
         </h2>
 
@@ -236,6 +242,15 @@ export function MembresiasPage() {
           <p className="py-8 text-center text-sm text-slate-500">
             Aún no hay membresías asignadas.
           </p>
+        )}
+        {membresias && (
+          <CargarMas
+            hayMas={hayMas}
+            cargando={cargandoMas}
+            onClick={cargarMas}
+            mostrados={membresias.length}
+            total={total}
+          />
         )}
       </section>
     </div>

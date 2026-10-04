@@ -1,6 +1,7 @@
 import { FunctionsHttpError } from '@supabase/supabase-js';
 import { supabase } from '../../../lib/supabaseClient';
 import type { Perfil, RolUsuario } from '../../../types/database.types';
+import { rango, type Pagina } from '../../../lib/paginacion';
 
 /**
  * Extrae el mensaje real de error de una Edge Function. Cuando la función
@@ -20,13 +21,15 @@ async function mensajeDeFuncion(error: unknown): Promise<string> {
 }
 
 /** Lista todos los perfiles (solo visible para administrador por RLS). */
-export async function listarPerfiles(): Promise<Perfil[]> {
-  const { data, error } = await supabase
+export async function listarPerfiles(pagina = 0): Promise<Pagina<Perfil>> {
+  const { data, error, count } = await supabase
     .from('perfiles')
-    .select('*')
-    .order('fecha_registro', { ascending: false });
+    .select('*', { count: 'exact' })
+    .order('fecha_registro', { ascending: false })
+    .order('id')
+    .range(...rango(pagina));
   if (error) throw error;
-  return data ?? [];
+  return { items: data ?? [], total: count ?? 0 };
 }
 
 export interface NuevoUsuario {
