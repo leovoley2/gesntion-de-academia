@@ -63,6 +63,8 @@ export interface DatosEdicion {
   nombre_completo: string;
   telefono: string | null;
   rol: RolUsuario;
+  /** Solo tiene sentido para administradores que además dan clases. */
+  es_entrenador: boolean;
 }
 
 /** Edita los datos de un perfil (solo admin por RLS). */

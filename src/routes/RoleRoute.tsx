@@ -8,7 +8,7 @@ interface Props {
 }
 
 export function RoleRoute({ permitidos }: Props) {
-  const { perfil } = useAuth();
+  const { perfil, rolVista } = useAuth();
 
   // Sin perfil aún (recién iniciada la sesión) no se sabe el rol:
   // mostrar loader en vez de renderizar contenido restringido.
@@ -20,7 +20,7 @@ export function RoleRoute({ permitidos }: Props) {
     );
   }
 
-  if (!permitidos.includes(perfil.rol)) {
+  if (!rolVista || !permitidos.includes(rolVista)) {
     return <Navigate to="/" replace />;
   }
 

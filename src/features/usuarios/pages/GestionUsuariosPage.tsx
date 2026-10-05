@@ -180,8 +180,14 @@ function FilaUsuario({ perfil }: { perfil: Perfil }) {
     nombre_completo: perfil.nombre_completo,
     telefono: perfil.telefono,
     rol: perfil.rol,
+    es_entrenador: perfil.es_entrenador,
   });
   // Contraseña nueva opcional: vacía = no se toca.
+  // La marca "también es entrenador" solo aplica a administradores.
+  const datosAGuardar: DatosEdicion = {
+    ...datos,
+    es_entrenador: datos.rol === 'administrador' && datos.es_entrenador,
+  };
   const [nuevaPassword, setNuevaPassword] = useState('');
 
   const guardar = useMutation({
@@ -190,7 +196,7 @@ function FilaUsuario({ perfil }: { perfil: Perfil }) {
         const problema = validarPassword(nuevaPassword);
         if (problema) throw new Error(problema);
       }
-      await actualizarUsuario(perfil.id, datos);
+      await actualizarUsuario(perfil.id, datosAGuardar);
       if (nuevaPassword) await restablecerPassword(perfil.id, nuevaPassword);
     },
     onSuccess: () => {
@@ -249,7 +255,21 @@ function FilaUsuario({ perfil }: { perfil: Perfil }) {
             </p>
           </div>
         )}
-        {datos.rol === 'entrenador' && (
+        {datos.rol === 'administrador' && (
+          <label className="flex items-start gap-2 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
+            <input
+              type="checkbox"
+              checked={datos.es_entrenador}
+              onChange={(e) => setDatos({ ...datos, es_entrenador: e.target.checked })}
+              className="mt-0.5"
+            />
+            <span>
+              <b>También es entrenador.</b> Aparece en la lista de entrenadores para los alumnos y
+              puede cambiar a "modo entrenador" para ver sus clases, asistencia y reservas.
+            </span>
+          </label>
+        )}
+        {(datos.rol === 'entrenador' || (datos.rol === 'administrador' && datos.es_entrenador)) && (
           <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">
             Las tarifas de clases personalizadas se gestionan en{' '}
             <span className="font-semibold text-brand-600">Tarifas personalizadas</span> (por modalidad).
@@ -285,6 +305,7 @@ function FilaUsuario({ perfil }: { perfil: Perfil }) {
       </div>
       <div className="flex items-center gap-1">
         <Badge variante={COLOR_ROL[perfil.rol]}>{perfil.rol}</Badge>
+        {perfil.es_entrenador && <Badge variante="verde">entrenador</Badge>}
         <button
           onClick={() => setEditando(true)}
           className="rounded-lg p-2 text-slate-500 active:bg-slate-100"

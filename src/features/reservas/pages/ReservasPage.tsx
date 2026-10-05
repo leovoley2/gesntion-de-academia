@@ -10,10 +10,10 @@ import { listarEntrenadores } from '../api/reservas.api';
 import { listarSedes } from '../../sedes/api/sedes.api';
 
 export function ReservasPage() {
-  const { session, perfil } = useAuth();
+  const { session, rolVista } = useAuth();
 
   // El entrenador gestiona solicitudes + su disponibilidad.
-  if (perfil?.rol === 'entrenador') {
+  if (rolVista === 'entrenador') {
     return (
       <>
         <div className="mx-auto w-full max-w-md px-4 pt-4 md:max-w-none md:px-6 md:pt-6 lg:max-w-7xl lg:px-8">

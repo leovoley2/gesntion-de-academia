@@ -43,6 +43,8 @@ export type Perfil = {
   rol: RolUsuario;
   fecha_registro: string;
   tarifa_personalizada: number;
+  /** Administrador que además da clases (puede pasar a "modo entrenador"). */
+  es_entrenador: boolean;
 }
 
 export type SedeCancha = {

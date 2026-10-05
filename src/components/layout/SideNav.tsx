@@ -1,14 +1,22 @@
 import { NavLink } from 'react-router-dom';
 import { LogOut, CircleDot } from 'lucide-react';
-import type { Perfil } from '../../types/database.types';
+import type { Perfil, RolUsuario } from '../../types/database.types';
+import { SelectorModo } from './SelectorModo';
 import { ITEMS_NAV } from './navegacion';
 
 /**
  * Barra lateral con todas las secciones del rol, siempre a la vista.
  * Tablet (md): solo iconos (con tooltip). Escritorio (lg+): iconos + nombres.
  */
-export function SideNav({ perfil, onSalir }: { perfil: Perfil | null; onSalir: () => void }) {
-  const rol = perfil?.rol;
+export function SideNav({
+  perfil,
+  rol,
+  onSalir,
+}: {
+  perfil: Perfil | null;
+  rol: RolUsuario | undefined;
+  onSalir: () => void;
+}) {
   const visibles = rol ? ITEMS_NAV.filter((i) => i.roles.includes(rol)) : [];
 
   return (
@@ -19,6 +27,10 @@ export function SideNav({ perfil, onSalir }: { perfil: Perfil | null; onSalir: (
           <p className="text-sm font-bold text-brand-800">Arena Voleibol Club</p>
           <p className="text-xs capitalize text-slate-400">{rol ?? ''}</p>
         </div>
+      </div>
+
+      <div className="hidden px-3 pt-3 lg:block">
+        <SelectorModo />
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto p-3">

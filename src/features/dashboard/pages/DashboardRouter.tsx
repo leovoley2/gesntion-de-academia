@@ -4,9 +4,9 @@ import { DashboardEntrenador } from './DashboardEntrenador';
 import { DashboardAlumno } from './DashboardAlumno';
 
 export function DashboardRouter() {
-  const { perfil } = useAuth();
+  const { rolVista } = useAuth();
 
-  switch (perfil?.rol) {
+  switch (rolVista) {
     case 'administrador':
       return <DashboardAdmin />;
     case 'entrenador':

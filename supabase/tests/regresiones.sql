@@ -2,7 +2,7 @@
 -- SUITE DE REGRESIÓN DE LA BASE DE DATOS (RLS, triggers y RPC)
 --
 -- Cubre los bugs 1–6 de la auditoría (2026-10-04), las funciones de
--- escalabilidad, vencimientos y qué ve cada rol (56 casos). Crea sus propios usuarios y datos de prueba, y TODO
+-- escalabilidad, vencimientos, admin-entrenador y qué ve cada rol (60 casos). Crea sus propios usuarios y datos de prueba, y TODO
 -- se deshace con el ROLLBACK final: se puede ejecutar contra producción
 -- sin dejar rastro.
 --
@@ -294,6 +294,26 @@ select pg_temp.afirmar('vence: un paquete sin fecha de fin no vence',
 select public.reponer_un_credito('30000000-0000-4000-8000-000000000003', array['personalizado']::tipo_membresia[]);
 select pg_temp.afirmar('vence: devolver un crédito no reactiva un paquete vencido por fecha',
   (select estado = 'vencida' from matriculas_membresias where id = 'c3000000-0000-4000-8000-000000000003'));
+select pg_temp.como('10000000-0000-4000-8000-000000000001');
+
+-- ============================================================
+-- ADMINISTRADOR QUE TAMBIÉN ES ENTRENADOR (migración 0017)
+-- ============================================================
+select pg_temp.como(null);
+update perfiles set es_entrenador = true, nombre_completo = 'T Admin Entrenador'
+where id = 'a0000000-0000-4000-8000-00000000000a';
+insert into tarifas_entrenador (entrenador_id, modalidad, precio_por_atleta) values
+  ('a0000000-0000-4000-8000-00000000000a', 'individual', 90);
+select pg_temp.como('20000000-0000-4000-8000-000000000002');
+select pg_temp.afirmar('admin-entrenador: los alumnos lo ven en la lista de entrenadores',
+  exists (select 1 from perfiles where id = 'a0000000-0000-4000-8000-00000000000a'));
+select pg_temp.afirmar('admin-entrenador: su paquete tiene precio (90 × 4 con 5 % = 342)',
+  public.precio_paquete('a0000000-0000-4000-8000-00000000000a', 'individual', 4) = 342);
+select pg_temp.como('10000000-0000-4000-8000-000000000001');
+select pg_temp.debe_fallar('admin-entrenador: un alumno no puede marcarse como entrenador', $q$
+  update perfiles set es_entrenador = true where id = '10000000-0000-4000-8000-000000000001' $q$);
+select pg_temp.afirmar('admin-entrenador: un alumno marcado no aparece como entrenador a otros',
+  not exists (select 1 from perfiles where es_entrenador and rol = 'alumno'));
 select pg_temp.como('10000000-0000-4000-8000-000000000001');
 
 -- ============================================================

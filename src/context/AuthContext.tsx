@@ -2,13 +2,29 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { Session } from '@supabase/supabase-js';
 import { supabase, vieneDeRecuperacion, errorEnlaceAuth } from '../lib/supabaseClient';
-import type { Perfil } from '../types/database.types';
+import type { Perfil, RolUsuario } from '../types/database.types';
+import { puedeCambiarModo, rolDeVista, type Modo } from './rolVista';
 
 interface AuthState {
   session: Session | null;
   perfil: Perfil | null;
   cargando: boolean;
   cerrarSesion: () => Promise<void>;
+  /** Rol con el que se pinta la app (el admin-entrenador puede alternarlo). */
+  rolVista: RolUsuario | undefined;
+  puedeCambiarModo: boolean;
+  cambiarModo: (modo: Modo) => void;
+}
+
+const CLAVE_MODO = 'modo-vista';
+
+function leerModo(): Modo | null {
+  try {
+    const m = localStorage.getItem(CLAVE_MODO);
+    return m === 'entrenador' || m === 'administrador' ? m : null;
+  } catch {
+    return null;
+  }
 }
 
 const AuthContext = createContext<AuthState | undefined>(undefined);
@@ -17,6 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [perfil, setPerfil] = useState<Perfil | null>(null);
   const [cargando, setCargando] = useState(true);
+  const [modo, setModo] = useState<Modo | null>(leerModo);
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
@@ -71,8 +88,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   }
 
+  function cambiarModo(nuevo: Modo) {
+    setModo(nuevo);
+    try {
+      localStorage.setItem(CLAVE_MODO, nuevo);
+    } catch {
+      // Sin almacenamiento (modo privado): el modo dura lo que la pestaña.
+    }
+    // Cada modo tiene su propio menú: volver al inicio evita quedarse en una
+    // pantalla que el otro modo no muestra.
+    navigate('/', { replace: true });
+  }
+
   return (
-    <AuthContext.Provider value={{ session, perfil, cargando, cerrarSesion }}>
+    <AuthContext.Provider
+      value={{
+        session,
+        perfil,
+        cargando,
+        cerrarSesion,
+        rolVista: rolDeVista(perfil, modo),
+        puedeCambiarModo: puedeCambiarModo(perfil),
+        cambiarModo,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

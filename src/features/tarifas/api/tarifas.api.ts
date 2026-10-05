@@ -17,7 +17,7 @@ export async function listarEntrenadoresTarifas(): Promise<EntrenadorTarifas[]> 
   const { data, error } = await supabase
     .from('perfiles')
     .select('*, tarifas:tarifas_entrenador(*)')
-    .eq('rol', 'entrenador')
+    .or('rol.eq.entrenador,es_entrenador.eq.true')
     .order('nombre_completo', { ascending: true })
     .returns<EntrenadorTarifas[]>();
   if (error) throw error;

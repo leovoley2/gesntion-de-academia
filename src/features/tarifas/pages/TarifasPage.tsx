@@ -11,8 +11,9 @@ import { useAuth } from '../../../context/AuthContext';
 import type { ModalidadPersonalizada } from '../../../types/database.types';
 
 export function TarifasPage() {
-  const { perfil, session } = useAuth();
-  const esAdmin = perfil?.rol === 'administrador';
+  const { rolVista, session } = useAuth();
+  // En "modo entrenador" el admin-entrenador ve solo su propia ficha.
+  const esAdmin = rolVista === 'administrador';
 
   const { data: entrenadores, isLoading } = useQuery({
     queryKey: ['entrenadores-tarifas-edit'],

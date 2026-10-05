@@ -11,7 +11,7 @@ import { isoLocal } from '../../../utils/fechas';
 const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
 export function AsistenciaPage() {
-  const { session, perfil } = useAuth();
+  const { session, rolVista } = useAuth();
   const hoy = new Date();
   const fecha = isoLocal(hoy); // fecha local, consistente con getDay()
   const diaSemana = hoy.getDay();
@@ -25,7 +25,7 @@ export function AsistenciaPage() {
   const { data: agenda, isLoading } = useQuery({
     queryKey: ['agenda', entrenadorId, diaSemana],
     queryFn: () => listarAgendaEntrenador(entrenadorId, diaSemana),
-    enabled: !!entrenadorId && perfil?.rol === 'entrenador',
+    enabled: !!entrenadorId && rolVista === 'entrenador',
   });
 
   if (clase) {
@@ -41,7 +41,7 @@ export function AsistenciaPage() {
         </p>
       </div>
 
-      {perfil?.rol !== 'entrenador' ? (
+      {rolVista !== 'entrenador' ? (
         <p className="py-8 text-center text-sm text-slate-500">
           La toma de asistencia está disponible para los entrenadores.
         </p>
