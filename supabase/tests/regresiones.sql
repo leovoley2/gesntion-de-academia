@@ -2,7 +2,7 @@
 -- SUITE DE REGRESIÓN DE LA BASE DE DATOS (RLS, triggers y RPC)
 --
 -- Cubre los bugs 1–6 de la auditoría (2026-10-04), las funciones de
--- escalabilidad, vencimientos y qué ve cada rol (55 casos). Crea sus propios usuarios y datos de prueba, y TODO
+-- escalabilidad, vencimientos y qué ve cada rol (56 casos). Crea sus propios usuarios y datos de prueba, y TODO
 -- se deshace con el ROLLBACK final: se puede ejecutar contra producción
 -- sin dejar rastro.
 --
@@ -262,6 +262,9 @@ select pg_temp.afirmar('escala: vencimiento diario programado en pg_cron',
 select pg_temp.como('10000000-0000-4000-8000-000000000001');
 select pg_temp.debe_fallar('seguridad: un alumno no puede hacerse administrador', $q$
   update perfiles set rol = 'administrador' where id = '10000000-0000-4000-8000-000000000001' $q$);
+select pg_temp.debe_fallar('seguridad: un alumno no puede crear pagos a mano (solo vía inscripción/paquete)', $q$
+  insert into pagos (alumno_id, monto, concepto, metodo_pago, estado)
+  values ('10000000-0000-4000-8000-000000000001', 1, 'pago a mano', 'Yape', 'pendiente') $q$);
 
 -- ============================================================
 -- VENCIMIENTOS — mensualidades Y paquetes vencen en su fecha de fin

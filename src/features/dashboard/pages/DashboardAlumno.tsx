@@ -157,7 +157,7 @@ export function DashboardAlumno() {
           <CreditCard className="h-6 w-6 text-brand-600" />
           <div>
             <p className="font-semibold text-slate-800">Mis pagos</p>
-            <p className="text-xs text-slate-400">Registra tu pago y revisa su estado</p>
+            <p className="text-xs text-slate-400">Revisa tus pagos y su estado</p>
           </div>
         </Link>
       </div>
