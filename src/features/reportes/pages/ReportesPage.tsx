@@ -24,7 +24,7 @@ export function ReportesPage() {
       </h1>
 
       {/* Selector de mes */}
-      <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-2 shadow-sm lg:max-w-md">
+      <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-2 shadow-sm md:max-w-md">
         <button
           onClick={() => setOffset(offset - 1)}
           className="rounded-lg p-2 text-slate-500 active:bg-slate-100"
@@ -51,7 +51,7 @@ export function ReportesPage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             <Tarjeta
               Icon={TrendingUp}
               titulo="Ingresos aprobados"
@@ -82,7 +82,7 @@ export function ReportesPage() {
             />
           </div>
 
-          <div className="space-y-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-4 lg:space-y-0">
+          <div className="space-y-4 md:grid md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
           {/* Ingresos por método de pago */}
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <h2 className="mb-3 text-sm font-bold text-slate-700">Por método de pago</h2>

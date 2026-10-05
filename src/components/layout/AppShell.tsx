@@ -5,8 +5,8 @@ import { BottomNav } from './BottomNav';
 import { SideNav } from './SideNav';
 
 /**
- * Móvil/tablet: cabecera arriba + barra de navegación abajo.
- * Escritorio (lg+): barra lateral fija con todas las secciones y contenido a lo ancho.
+ * Móvil: cabecera arriba + barra de navegación abajo.
+ * Tablet (md+): barra lateral de iconos. Escritorio (lg+): barra lateral con nombres.
  */
 export function AppShell({ children }: { children: ReactNode }) {
   const { perfil, cerrarSesion } = useAuth();
@@ -16,7 +16,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <SideNav perfil={perfil} onSalir={cerrarSesion} />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
+        <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 md:hidden">
           <div className="flex items-center gap-2">
             <CircleDot className="h-6 w-6 text-arena-400" />
             <div>

@@ -35,7 +35,7 @@ export function DashboardAdmin() {
       <h1 className="text-lg font-bold text-slate-800">Hola, {perfil?.nombre_completo}</h1>
       <p className="text-sm text-slate-500">Panel administrativo</p>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Tarjeta
           Icon={TrendingUp}
           titulo="Ingresos del mes"

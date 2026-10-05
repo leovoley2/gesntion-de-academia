@@ -16,7 +16,7 @@ export function ReservasPage() {
   if (perfil?.rol === 'entrenador') {
     return (
       <>
-        <div className="mx-auto w-full max-w-md px-4 pt-4 lg:max-w-7xl lg:px-8 lg:pt-6">
+        <div className="mx-auto w-full max-w-md px-4 pt-4 md:max-w-none md:px-6 md:pt-6 lg:max-w-7xl lg:px-8">
           <SolicitudesReserva entrenadorId={session!.user.id} />
         </div>
         <CalendarioDisponibilidad entrenadorId={session!.user.id} />

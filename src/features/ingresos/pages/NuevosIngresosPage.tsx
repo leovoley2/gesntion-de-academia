@@ -56,7 +56,7 @@ export function NuevosIngresosPage() {
           No hay solicitudes pendientes. Cuando alguien se inscriba aparecerá aquí.
         </p>
       ) : (
-        <ul className="lista-tarjetas">
+        <ul className="lista-tarjetas-ancha">
           {solicitudes.map((s) => (
             <TarjetaSolicitud
               key={s.id}

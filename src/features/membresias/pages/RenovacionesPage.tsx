@@ -98,7 +98,7 @@ export function RenovacionesPage() {
           No hay mensualidades activas todavía.
         </p>
       ) : (
-        <ul className="lista-tarjetas">
+        <ul className="lista-tarjetas-ancha">
           {ordenadas.map((m) => {
             const d = diasHasta(m.fecha_fin);
             const vencida = m.estado === 'vencida' || (d !== null && d < 0);

@@ -38,10 +38,10 @@ export function ListaAsistencia({ horarioClaseId, fecha, alumnos }: Props) {
   }
 
   return (
-    <div className="mx-auto w-full max-w-md px-3 pb-24 lg:max-w-7xl lg:px-8 lg:pb-10">
+    <div className="mx-auto w-full max-w-md px-3 pb-24 md:max-w-none md:px-6 md:pb-10 lg:max-w-7xl lg:px-8">
       <h2 className="py-4 text-lg font-bold text-slate-800">Asistencia · {fecha}</h2>
 
-      <ul className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0 2xl:grid-cols-3">
+      <ul className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0 2xl:grid-cols-3">
         {alumnos.map((alumno) => {
           const actual = estados[alumno.alumno_id] ?? alumno.estado;
           const esteGuardando = guardando === alumno.alumno_id;

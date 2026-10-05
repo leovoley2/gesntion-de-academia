@@ -14,33 +14,41 @@ body {
 
 /*
  * Diseño responsive compartido por las páginas.
- * Móvil: una columna estrecha (max-w-md). Escritorio (lg+): el contenido usa el
- * ancho disponible — formulario a la izquierda y listado a la derecha, y las
- * listas de tarjetas en rejilla — para no tener que hacer scroll.
+ *   Móvil (<768px): una columna estrecha (max-w-md).
+ *   Tablet (md, 768px+): barra lateral de iconos, formulario + listado en dos columnas.
+ *   Escritorio (lg, 1024px+): barra lateral completa, columnas más amplias y
+ *   listas de tarjetas en rejilla, para no tener que hacer scroll.
  */
 @layer components {
-  /* Contenedor de página: estrecho en móvil, ancho en escritorio. */
+  /* Contenedor de página: estrecho en móvil, ancho en tablet/escritorio. */
   .pagina {
-    @apply mx-auto w-full max-w-md p-4 pb-24 lg:max-w-7xl lg:px-8 lg:pb-10 lg:pt-6;
+    @apply mx-auto w-full max-w-md p-4 pb-24 md:max-w-none md:px-6 md:pb-10 md:pt-6 lg:max-w-7xl lg:px-8;
   }
   /* Variante para flujos tipo asistente (inscripción) que no conviene estirar. */
   .pagina-media {
-    @apply mx-auto w-full max-w-md p-4 pb-24 lg:max-w-4xl lg:px-8 lg:pb-10 lg:pt-6;
+    @apply mx-auto w-full max-w-md p-4 pb-24 md:max-w-3xl md:px-6 md:pb-10 md:pt-6 lg:max-w-4xl lg:px-8;
   }
-  /* Formulario (1ª columna) + listado (2ª columna) en escritorio. */
+  /* Formulario (1ª columna) + listado (2ª columna) desde tablet. */
   .pagina-dos-columnas {
-    @apply space-y-6 lg:grid lg:grid-cols-[minmax(320px,400px)_minmax(0,1fr)] lg:items-start lg:gap-8 lg:space-y-0;
+    @apply space-y-6 md:grid md:grid-cols-[minmax(260px,300px)_minmax(0,1fr)] md:items-start md:gap-6 md:space-y-0 lg:grid-cols-[minmax(320px,400px)_minmax(0,1fr)] lg:gap-8;
   }
   /* El formulario queda fijo mientras se recorre el listado. */
   .panel-lateral {
-    @apply lg:sticky lg:top-6;
+    @apply md:sticky md:top-6;
   }
   /* Elemento que ocupa las dos columnas (cabeceras, resúmenes). */
   .ancho-completo {
-    @apply lg:col-span-2;
+    @apply md:col-span-2;
   }
-  /* Lista de tarjetas: apilada en móvil, rejilla en escritorio. */
+  /*
+   * Lista de tarjetas dentro de la columna del listado: en tablet esa columna
+   * es estrecha (una tarjeta por fila); en escritorio, rejilla.
+   */
   .lista-tarjetas {
     @apply space-y-2 lg:grid lg:grid-cols-2 lg:items-start lg:gap-3 lg:space-y-0 2xl:grid-cols-3;
+  }
+  /* Lista de tarjetas en una página de una sola columna: rejilla ya en tablet. */
+  .lista-tarjetas-ancha {
+    @apply space-y-2 md:grid md:grid-cols-2 md:items-start md:gap-3 md:space-y-0 2xl:grid-cols-3;
   }
 }

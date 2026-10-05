@@ -2,13 +2,13 @@ import { NavLink } from 'react-router-dom';
 import type { RolUsuario } from '../../types/database.types';
 import { ITEMS_NAV } from './navegacion';
 
-/** Barra de navegación inferior (solo móvil/tablet; en escritorio manda la lateral). */
+/** Barra de navegación inferior (solo móvil; desde tablet manda la barra lateral). */
 export function BottomNav({ rol }: { rol?: RolUsuario }) {
   if (!rol) return null;
   const visibles = ITEMS_NAV.filter((i) => i.movil && i.roles.includes(rol));
 
   return (
-    <nav className="sticky bottom-0 z-10 grid grid-flow-col border-t border-slate-200 bg-white lg:hidden">
+    <nav className="sticky bottom-0 z-10 grid grid-flow-col border-t border-slate-200 bg-white md:hidden">
       {visibles.map(({ to, label, Icon }) => (
         <NavLink
           key={to}

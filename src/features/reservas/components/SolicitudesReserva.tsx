@@ -75,7 +75,7 @@ export function SolicitudesReserva({ entrenadorId }: Props) {
       {reservas.length === 0 ? (
         <p className="py-6 text-center text-sm text-slate-500">No hay solicitudes.</p>
       ) : (
-        <ul className="lista-tarjetas">
+        <ul className="lista-tarjetas-ancha">
           {reservas.map((r) => (
             <Fila key={r.id} r={r} onCambiar={cambiar.mutate} guardando={cambiar.isPending} />
           ))}

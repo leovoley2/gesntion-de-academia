@@ -42,7 +42,7 @@ export function TarifasPage() {
           Aún no hay entrenadores. Créalos en Usuarios y aquí podrás fijar sus tarifas.
         </p>
       ) : (
-        <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0 2xl:grid-cols-3">
+        <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0 2xl:grid-cols-3">
           {visibles.map((e) => (
             <FichaEntrenador key={e.id} entrenador={e} />
           ))}

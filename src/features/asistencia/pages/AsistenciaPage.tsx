@@ -50,7 +50,7 @@ export function AsistenciaPage() {
           <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
         </div>
       ) : agenda && agenda.length > 0 ? (
-        <ul className="lista-tarjetas">
+        <ul className="lista-tarjetas-ancha">
           {agenda.map((c) => (
             <li key={c.id}>
               <button
@@ -95,7 +95,7 @@ function DetalleAsistencia({
 
   return (
     <div>
-      <div className="mx-auto flex max-w-md items-center gap-2 px-3 pt-4 lg:max-w-7xl lg:px-8 lg:pt-6">
+      <div className="mx-auto flex max-w-md items-center gap-2 px-3 pt-4 md:max-w-none md:px-6 md:pt-6 lg:max-w-7xl lg:px-8">
         <button
           onClick={onVolver}
           className="flex items-center gap-1 text-sm font-medium text-brand-600"
@@ -114,7 +114,7 @@ function DetalleAsistencia({
       ) : alumnos && alumnos.length > 0 ? (
         <ListaAsistencia horarioClaseId={clase.id} fecha={fecha} alumnos={alumnos} />
       ) : (
-        <p className="mx-auto max-w-md px-4 py-12 text-center text-sm text-slate-500 lg:max-w-7xl">
+        <p className="mx-auto max-w-md px-4 py-12 text-center text-sm text-slate-500 md:max-w-none lg:max-w-7xl">
           <ClipboardCheck className="mx-auto mb-2 h-8 w-8 text-slate-300" />
           No hay alumnos inscritos en esta clase. Inscríbelos desde el módulo de Horarios.
         </p>
