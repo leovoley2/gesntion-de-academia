@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CircleDot, Loader2, MailCheck, CheckCircle2, Sparkles } from 'lucide-react';
 import { supabase } from '../../../lib/supabaseClient';
 import { TERMINOS_VERSION } from '../../legal/version';
+import { mensajeErrorRegistro, validarPassword } from '../password';
 
 interface Bienvenida {
   nombre: string;
@@ -23,8 +24,9 @@ export function RegistroPage() {
   async function registrar(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (password.length < 8) {
-      setError('La contraseña debe tener al menos 8 caracteres.');
+    const problema = validarPassword(password);
+    if (problema) {
+      setError(problema);
       return;
     }
     if (!acepta) {
@@ -47,17 +49,7 @@ export function RegistroPage() {
     setCargando(false);
 
     if (error) {
-      const msg = String(error.message ?? '');
-      if (/confirmation email|rate limit|sending/i.test(msg)) {
-        setError(
-          'No pudimos enviar el correo de confirmación en este momento. ' +
-            'Inténtalo de nuevo en unos minutos o contacta a la academia.'
-        );
-      } else if (/already registered|already exists/i.test(msg)) {
-        setError('Ese correo ya está registrado. Inicia sesión o usa otro correo.');
-      } else {
-        setError(msg || 'No se pudo completar el registro. Inténtalo de nuevo.');
-      }
+      setError(mensajeErrorRegistro(error));
       return;
     }
     // Bienvenida personalizada. Si la confirmación de correo está desactivada,

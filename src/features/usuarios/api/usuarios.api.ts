@@ -2,6 +2,7 @@ import { FunctionsHttpError } from '@supabase/supabase-js';
 import { supabase } from '../../../lib/supabaseClient';
 import type { Perfil, RolUsuario } from '../../../types/database.types';
 import { rango, type Pagina } from '../../../lib/paginacion';
+import { traducirErrorServidor } from '../../auth/password';
 
 /**
  * Extrae el mensaje real de error de una Edge Function. Cuando la función
@@ -12,7 +13,7 @@ async function mensajeDeFuncion(error: unknown): Promise<string> {
   if (error instanceof FunctionsHttpError) {
     try {
       const cuerpo = (await error.context.json()) as { error?: string } | null;
-      if (cuerpo?.error) return cuerpo.error;
+      if (cuerpo?.error) return traducirErrorServidor(cuerpo.error);
     } catch {
       // cuerpo no-JSON: caemos al mensaje genérico
     }
@@ -49,7 +50,7 @@ export async function crearUsuario(payload: NuevoUsuario): Promise<void> {
     body: payload,
   });
   if (error) throw new Error(await mensajeDeFuncion(error));
-  if (data?.error) throw new Error(data.error);
+  if (data?.error) throw new Error(traducirErrorServidor(data.error));
 }
 
 /** Cambia el rol de un perfil existente. */
@@ -79,7 +80,7 @@ export async function restablecerPassword(id: string, password: string): Promise
     body: { id, password },
   });
   if (error) throw new Error(await mensajeDeFuncion(error));
-  if (data?.error) throw new Error(data.error);
+  if (data?.error) throw new Error(traducirErrorServidor(data.error));
 }
 
 /** Elimina un usuario por completo (cuenta auth + datos) vía Edge Function. */
@@ -88,5 +89,5 @@ export async function eliminarUsuario(id: string): Promise<void> {
     body: { id },
   });
   if (error) throw new Error(await mensajeDeFuncion(error));
-  if (data?.error) throw new Error(data.error);
+  if (data?.error) throw new Error(traducirErrorServidor(data.error));
 }

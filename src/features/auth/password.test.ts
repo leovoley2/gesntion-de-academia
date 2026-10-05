@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { MIN_PASSWORD, mensajeErrorAuth, urlRestablecer, validarPassword } from './password';
+import {
+  MIN_PASSWORD,
+  mensajeErrorAuth,
+  mensajeErrorRegistro,
+  traducirErrorServidor,
+  urlRestablecer,
+  validarPassword,
+} from './password';
 
 describe('validarPassword', () => {
   it('rechaza contraseñas más cortas que el mínimo', () => {
@@ -43,5 +50,50 @@ describe('mensajeErrorAuth', () => {
 
   it('da un mensaje genérico para errores desconocidos', () => {
     expect(mensajeErrorAuth({ message: 'boom' })).toMatch(/No se pudo/);
+  });
+});
+
+describe('mensajeErrorRegistro', () => {
+  it('traduce la contraseña filtrada/débil que rechaza Supabase (mensaje real en inglés)', () => {
+    expect(
+      mensajeErrorRegistro({
+        code: 'weak_password',
+        message: 'Password is known to be weak and easy to guess, please choose a different one.',
+      })
+    ).toMatch(/débil/);
+  });
+
+  it('avisa si el correo ya está registrado', () => {
+    expect(mensajeErrorRegistro({ code: 'user_already_exists', message: 'User already registered' })).toMatch(
+      /ya está registrado/
+    );
+  });
+
+  it('avisa si no se pudo enviar el correo de confirmación', () => {
+    expect(mensajeErrorRegistro({ message: 'Error sending confirmation email' })).toMatch(/correo de confirmación/);
+  });
+
+  it('nunca muestra el texto en inglés de un error desconocido', () => {
+    expect(mensajeErrorRegistro({ message: 'Something unexpected happened' })).not.toMatch(/Something/);
+  });
+});
+
+describe('traducirErrorServidor (respuestas de las Edge Functions del admin)', () => {
+  it('traduce la contraseña débil que rechaza Supabase', () => {
+    expect(traducirErrorServidor('Password is known to be weak and easy to guess, please choose a different one.')).toMatch(
+      /débil/
+    );
+  });
+
+  it('traduce el correo ya registrado de admin.createUser', () => {
+    expect(traducirErrorServidor('A user with this email address has already been registered')).toMatch(
+      /ya está registrado/
+    );
+  });
+
+  it('deja intactos los mensajes propios que ya están en español', () => {
+    expect(traducirErrorServidor('Solo un administrador puede realizar esta acción')).toBe(
+      'Solo un administrador puede realizar esta acción'
+    );
   });
 });

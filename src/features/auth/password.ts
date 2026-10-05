@@ -42,3 +42,37 @@ export function mensajeErrorAuth(error: { code?: string; message: string }): str
   }
   return 'No se pudo completar la operación. Inténtalo de nuevo en un momento.';
 }
+
+/**
+ * Mensaje en español para los errores del registro. Nunca muestra el texto
+ * original de Supabase (viene en inglés), p. ej. cuando la protección contra
+ * contraseñas filtradas rechaza una contraseña débil.
+ */
+export function mensajeErrorRegistro(error: { code?: string; message: string }): string {
+  const m = error.message.toLowerCase();
+  if (error.code === 'user_already_exists' || /already registered|already exists/.test(m)) {
+    return 'Ese correo ya está registrado. Inicia sesión o usa otro correo.';
+  }
+  if (/confirmation email|sending/.test(m)) {
+    return (
+      'No pudimos enviar el correo de confirmación en este momento. ' +
+      'Inténtalo de nuevo en unos minutos o contacta a la academia.'
+    );
+  }
+  return mensajeErrorAuth(error);
+}
+
+/**
+ * Traduce los mensajes en inglés que Supabase devuelve a través de las Edge
+ * Functions del admin (crear usuario, restablecer contraseña). Los mensajes
+ * propios de esas funciones ya están en español y se dejan tal cual.
+ */
+export function traducirErrorServidor(mensaje: string): string {
+  if (/weak|pwned/i.test(mensaje)) {
+    return 'Esa contraseña es demasiado débil o apareció en filtraciones públicas. Elige otra.';
+  }
+  if (/already (been )?registered|already exists/i.test(mensaje)) {
+    return 'Ese correo ya está registrado.';
+  }
+  return mensaje;
+}
