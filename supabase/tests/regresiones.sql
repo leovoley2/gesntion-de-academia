@@ -1,8 +1,8 @@
 -- ============================================================
 -- SUITE DE REGRESIÓN DE LA BASE DE DATOS (RLS, triggers y RPC)
 --
--- Cubre los bugs 1–6 de la auditoría (2026-10-04) y las funciones de
--- escalabilidad. Crea sus propios usuarios y datos de prueba, y TODO
+-- Cubre los bugs 1–6 de la auditoría (2026-10-04), las funciones de
+-- escalabilidad y qué ve cada rol (46 casos). Crea sus propios usuarios y datos de prueba, y TODO
 -- se deshace con el ROLLBACK final: se puede ejecutar contra producción
 -- sin dejar rastro.
 --
@@ -262,6 +262,34 @@ select pg_temp.afirmar('escala: vencimiento diario programado en pg_cron',
 select pg_temp.como('10000000-0000-4000-8000-000000000001');
 select pg_temp.debe_fallar('seguridad: un alumno no puede hacerse administrador', $q$
   update perfiles set rol = 'administrador' where id = '10000000-0000-4000-8000-000000000001' $q$);
+
+-- ============================================================
+-- VISIBILIDAD POR ROL (migración 0013: mismas reglas, solo optimizadas)
+-- ============================================================
+select pg_temp.afirmar('rls: alumno ve sus pagos y no los ajenos',
+  (select count(*) from pagos) = (select count(*) from pagos where alumno_id = '10000000-0000-4000-8000-000000000001')
+  and (select count(*) from pagos) > 0);
+select pg_temp.afirmar('rls: alumno ve a los entrenadores pero no a otros alumnos',
+  exists (select 1 from perfiles where id = 'e0000000-0000-4000-8000-00000000000e')
+  and not exists (select 1 from perfiles where id = '20000000-0000-4000-8000-000000000002'));
+select pg_temp.como('e0000000-0000-4000-8000-00000000000e');
+select pg_temp.afirmar('rls: entrenador ve a los alumnos',
+  exists (select 1 from perfiles where id = '20000000-0000-4000-8000-000000000002'));
+select pg_temp.afirmar('rls: entrenador ve los inscritos de su clase',
+  exists (select 1 from inscripciones_clase where horario_clase_id = '40000000-0000-4000-8000-000000000004'));
+select pg_temp.afirmar('rls: entrenador no ve pagos', not exists (select 1 from pagos));
+select pg_temp.como('a0000000-0000-4000-8000-00000000000a');
+select pg_temp.afirmar('rls: admin ve todos los pagos de prueba',
+  (select count(*) from pagos where concepto like 'T %') = 4);
+select pg_temp.debe_pasar('rls: admin puede editar perfiles', $q$
+  update perfiles set telefono = '999' where id = '20000000-0000-4000-8000-000000000002' $q$);
+select pg_temp.afirmar('rls: la edición del admin se guardó',
+  (select telefono = '999' from perfiles where id = '20000000-0000-4000-8000-000000000002'));
+select pg_temp.como(null);
+select pg_temp.afirmar('seguridad: un anónimo no puede ejecutar mi_rol()',
+  not has_function_privilege('anon', 'public.mi_rol()', 'execute'));
+select pg_temp.afirmar('seguridad: un usuario con sesión sí puede ejecutar mi_rol()',
+  has_function_privilege('authenticated', 'public.mi_rol()', 'execute'));
 
 -- ---------- Resultado ----------
 select pg_temp.como(null);
