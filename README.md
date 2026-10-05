@@ -32,6 +32,25 @@ npx supabase gen types typescript --project-id <TU_ID> > src/types/database.type
 npm run dev
 ```
 
+## Tests
+
+```bash
+npm test          # unitarios (Vitest, en hora de Perú): fechas, paginación,
+                  # contraseñas, precio de paquetes, bloques de disponibilidad, menú
+```
+
+**Regresión de la base de datos** (`supabase/tests/regresiones.sql`): 36 casos
+sobre RLS, triggers y RPC (bugs 1–6 de la auditoría, métricas/reportes,
+vencimiento diario, anti-escalada de rol). Crea sus propios usuarios y datos y
+termina en `ROLLBACK`, así que se puede ejecutar contra producción sin dejar rastro:
+
+```bash
+psql "$DATABASE_URL" -f supabase/tests/regresiones.sql
+```
+
+(o pegarlo en el SQL Editor de Supabase). La primera fila del resultado dice
+`TODO OK` o `FALLA`. Ejecútala después de cada migración.
+
 ## Estado del proyecto Supabase "gestion" (2026-07-04)
 
 La base de datos del proyecto **gestion** ya está alineada con la app:
