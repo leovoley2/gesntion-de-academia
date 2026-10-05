@@ -62,9 +62,9 @@ export function GestionUsuariosPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-6 p-4 pb-24">
+    <div className="pagina pagina-dos-columnas">
       {/* Formulario de alta */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <section className="panel-lateral rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="mb-3 flex items-center gap-2 font-bold text-slate-800">
           <UserPlus className="h-5 w-5 text-brand-600" /> Nuevo usuario
         </h2>
@@ -144,7 +144,7 @@ export function GestionUsuariosPage() {
             <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
           </div>
         ) : (
-          <ul className="space-y-2">
+          <ul className="lista-tarjetas">
             {perfiles?.map((p) => (
               <FilaUsuario key={p.id} perfil={p} />
             ))}

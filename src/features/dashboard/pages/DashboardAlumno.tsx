@@ -47,7 +47,7 @@ export function DashboardAlumno() {
       : null;
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-4 p-4">
+    <div className="pagina space-y-4">
       <h1 className="text-lg font-bold text-slate-800">Hola, {perfil?.nombre_completo}</h1>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -138,27 +138,29 @@ export function DashboardAlumno() {
         </div>
       )}
 
-      <Link
-        to="/reservas"
-        className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
-      >
-        <CalendarDays className="h-6 w-6 text-brand-600" />
-        <div>
-          <p className="font-semibold text-slate-800">Reservar clase personalizada</p>
-          <p className="text-xs text-slate-400">Elige entrenador y horario</p>
-        </div>
-      </Link>
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <Link
+          to="/reservas"
+          className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
+        >
+          <CalendarDays className="h-6 w-6 text-brand-600" />
+          <div>
+            <p className="font-semibold text-slate-800">Reservar clase personalizada</p>
+            <p className="text-xs text-slate-400">Elige entrenador y horario</p>
+          </div>
+        </Link>
 
-      <Link
-        to="/mis-pagos"
-        className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
-      >
-        <CreditCard className="h-6 w-6 text-brand-600" />
-        <div>
-          <p className="font-semibold text-slate-800">Mis pagos</p>
-          <p className="text-xs text-slate-400">Registra tu pago y revisa su estado</p>
-        </div>
-      </Link>
+        <Link
+          to="/mis-pagos"
+          className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
+        >
+          <CreditCard className="h-6 w-6 text-brand-600" />
+          <div>
+            <p className="font-semibold text-slate-800">Mis pagos</p>
+            <p className="text-xs text-slate-400">Registra tu pago y revisa su estado</p>
+          </div>
+        </Link>
+      </div>
     </div>
   );
 }

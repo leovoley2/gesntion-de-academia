@@ -103,7 +103,7 @@ export function CalendarioDisponibilidad({ entrenadorId }: Props) {
   }
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-6 p-4 pb-24">
+    <div className="pagina pagina-dos-columnas">
       {/* Enlace a la gestión de tarifas (fuente única: tarifas_entrenador) */}
       <Link
         to="/tarifas"
@@ -119,7 +119,7 @@ export function CalendarioDisponibilidad({ entrenadorId }: Props) {
       </Link>
 
       {/* Generador en lote */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <section className="panel-lateral rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="mb-3 flex items-center gap-2 font-bold text-slate-800">
           <CalendarPlus className="h-5 w-5 text-brand-600" /> Habilitar horarios
         </h2>

@@ -31,11 +31,11 @@ export function DashboardAdmin() {
   const v = (n?: number) => (n === undefined ? '—' : String(n));
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-4 p-4">
+    <div className="pagina space-y-4">
       <h1 className="text-lg font-bold text-slate-800">Hola, {perfil?.nombre_completo}</h1>
       <p className="text-sm text-slate-500">Panel administrativo</p>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Tarjeta
           Icon={TrendingUp}
           titulo="Ingresos del mes"
@@ -47,93 +47,95 @@ export function DashboardAdmin() {
         <Tarjeta Icon={Users} titulo="Membresías vencidas" valor={v(m?.membresiasVencidas)} color="text-red-600" />
       </div>
 
-      <Link
-        to="/reportes"
-        className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
-      >
-        <BarChart3 className="h-6 w-6 text-brand-600" />
-        <div>
-          <p className="font-semibold text-slate-800">Reporte mensual</p>
-          <p className="text-xs text-slate-400">Ingresos por método y concepto, nuevos alumnos</p>
-        </div>
-      </Link>
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <Link
+          to="/reportes"
+          className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
+        >
+          <BarChart3 className="h-6 w-6 text-brand-600" />
+          <div>
+            <p className="font-semibold text-slate-800">Reporte mensual</p>
+            <p className="text-xs text-slate-400">Ingresos por método y concepto, nuevos alumnos</p>
+          </div>
+        </Link>
 
-      <Link
-        to="/usuarios"
-        className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
-      >
-        <UserPlus className="h-6 w-6 text-brand-600" />
-        <div>
-          <p className="font-semibold text-slate-800">Gestionar usuarios</p>
-          <p className="text-xs text-slate-400">Crear entrenadores y alumnos</p>
-        </div>
-      </Link>
+        <Link
+          to="/usuarios"
+          className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
+        >
+          <UserPlus className="h-6 w-6 text-brand-600" />
+          <div>
+            <p className="font-semibold text-slate-800">Gestionar usuarios</p>
+            <p className="text-xs text-slate-400">Crear entrenadores y alumnos</p>
+          </div>
+        </Link>
 
-      <Link
-        to="/renovaciones"
-        className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
-      >
-        <RefreshCw className="h-6 w-6 text-brand-600" />
-        <div>
-          <p className="font-semibold text-slate-800">Renovaciones y vencimientos</p>
-          <p className="text-xs text-slate-400">Renueva mensualidades y envía recordatorios</p>
-        </div>
-      </Link>
+        <Link
+          to="/renovaciones"
+          className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
+        >
+          <RefreshCw className="h-6 w-6 text-brand-600" />
+          <div>
+            <p className="font-semibold text-slate-800">Renovaciones y vencimientos</p>
+            <p className="text-xs text-slate-400">Renueva mensualidades y envía recordatorios</p>
+          </div>
+        </Link>
 
-      <Link
-        to="/alumnos"
-        className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
-      >
-        <UserCog className="h-6 w-6 text-brand-600" />
-        <div>
-          <p className="font-semibold text-slate-800">Días de entrenamiento</p>
-          <p className="text-xs text-slate-400">Modifica los días de cada alumno</p>
-        </div>
-      </Link>
+        <Link
+          to="/alumnos"
+          className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
+        >
+          <UserCog className="h-6 w-6 text-brand-600" />
+          <div>
+            <p className="font-semibold text-slate-800">Días de entrenamiento</p>
+            <p className="text-xs text-slate-400">Modifica los días de cada alumno</p>
+          </div>
+        </Link>
 
-      <Link
-        to="/membresias"
-        className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
-      >
-        <CreditCard className="h-6 w-6 text-brand-600" />
-        <div>
-          <p className="font-semibold text-slate-800">Membresías</p>
-          <p className="text-xs text-slate-400">Asignar planes y créditos a alumnos</p>
-        </div>
-      </Link>
+        <Link
+          to="/membresias"
+          className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
+        >
+          <CreditCard className="h-6 w-6 text-brand-600" />
+          <div>
+            <p className="font-semibold text-slate-800">Membresías</p>
+            <p className="text-xs text-slate-400">Asignar planes y créditos a alumnos</p>
+          </div>
+        </Link>
 
-      <Link
-        to="/tarifas"
-        className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
-      >
-        <DollarSign className="h-6 w-6 text-brand-600" />
-        <div>
-          <p className="font-semibold text-slate-800">Tarifas personalizadas</p>
-          <p className="text-xs text-slate-400">Precios por entrenador y modalidad</p>
-        </div>
-      </Link>
+        <Link
+          to="/tarifas"
+          className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
+        >
+          <DollarSign className="h-6 w-6 text-brand-600" />
+          <div>
+            <p className="font-semibold text-slate-800">Tarifas personalizadas</p>
+            <p className="text-xs text-slate-400">Precios por entrenador y modalidad</p>
+          </div>
+        </Link>
 
-      <Link
-        to="/horarios"
-        className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
-      >
-        <CalendarClock className="h-6 w-6 text-brand-600" />
-        <div>
-          <p className="font-semibold text-slate-800">Horarios de clases</p>
-          <p className="text-xs text-slate-400">Crear clases grupales e inscribir alumnos</p>
-        </div>
-      </Link>
+        <Link
+          to="/horarios"
+          className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
+        >
+          <CalendarClock className="h-6 w-6 text-brand-600" />
+          <div>
+            <p className="font-semibold text-slate-800">Horarios de clases</p>
+            <p className="text-xs text-slate-400">Crear clases grupales e inscribir alumnos</p>
+          </div>
+        </Link>
 
-      <Link
-        to="/sedes"
-        className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
-      >
-        <MapPin className="h-6 w-6 text-brand-600" />
-        <div>
-          <p className="font-semibold text-slate-800">Sedes y canchas</p>
-          <p className="text-xs text-slate-400">Administrar lugares y tarifas</p>
-        </div>
-      </Link>
+        <Link
+          to="/sedes"
+          className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm active:scale-[0.98]"
+        >
+          <MapPin className="h-6 w-6 text-brand-600" />
+          <div>
+            <p className="font-semibold text-slate-800">Sedes y canchas</p>
+            <p className="text-xs text-slate-400">Administrar lugares y tarifas</p>
+          </div>
+        </Link>
+      </div>
 
     </div>
   );

@@ -16,7 +16,7 @@ export function ReservasPage() {
   if (perfil?.rol === 'entrenador') {
     return (
       <>
-        <div className="mx-auto w-full max-w-md px-4 pt-4">
+        <div className="mx-auto w-full max-w-md px-4 pt-4 lg:max-w-7xl lg:px-8 lg:pt-6">
           <SolicitudesReserva entrenadorId={session!.user.id} />
         </div>
         <CalendarioDisponibilidad entrenadorId={session!.user.id} />
@@ -42,9 +42,11 @@ function ReservaAlumno({ alumnoId }: { alumnoId: string }) {
   const entrenadorSel = entrenadores?.find((e) => e.id === entrenadorId);
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-4 p-4">
-      <h1 className="pt-2 text-lg font-bold text-slate-800">Reservar clase personalizada</h1>
+    <div className="pagina pagina-dos-columnas">
+      <h1 className="ancho-completo pt-2 text-lg font-bold text-slate-800">Reservar clase personalizada</h1>
 
+      {/* Columna izquierda en escritorio: historial + elección de entrenador y sede */}
+      <div className="panel-lateral space-y-4">
       {/* Historial de solicitudes del alumno */}
       <section>
         <h2 className="mb-2 flex items-center gap-2 text-sm font-bold text-slate-700">
@@ -85,6 +87,7 @@ function ReservaAlumno({ alumnoId }: { alumnoId: string }) {
             ))}
           </select>
         </label>
+      </div>
       </div>
 
       {entrenadorId && sedeId ? (

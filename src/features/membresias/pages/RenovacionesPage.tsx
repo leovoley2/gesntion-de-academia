@@ -76,7 +76,7 @@ export function RenovacionesPage() {
   }).length;
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-4 p-4 pb-24">
+    <div className="pagina space-y-4">
       <h1 className="flex items-center gap-2 pt-2 text-lg font-bold text-slate-800">
         <CalendarClock className="h-5 w-5 text-brand-600" /> Renovaciones
         {porVencer > 0 && (
@@ -98,7 +98,7 @@ export function RenovacionesPage() {
           No hay mensualidades activas todavía.
         </p>
       ) : (
-        <ul className="space-y-2">
+        <ul className="lista-tarjetas">
           {ordenadas.map((m) => {
             const d = diasHasta(m.fecha_fin);
             const vencida = m.estado === 'vencida' || (d !== null && d < 0);

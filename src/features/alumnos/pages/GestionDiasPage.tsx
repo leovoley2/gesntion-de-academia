@@ -42,7 +42,7 @@ export function GestionDiasPage() {
   });
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-4 p-4 pb-24">
+    <div className="pagina space-y-4">
       <h1 className="flex items-center gap-2 pt-2 text-lg font-bold text-slate-800">
         <UserCog className="h-5 w-5 text-brand-600" /> Días de entrenamiento
       </h1>
@@ -53,7 +53,7 @@ export function GestionDiasPage() {
       <select
         value={alumnoId}
         onChange={(e) => setAlumnoId(e.target.value)}
-        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-400"
+        className="w-full rounded-xl lg:max-w-md border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-brand-400"
       >
         <option value="">— Elige un alumno —</option>
         {alumnos?.map((a) => (
@@ -72,7 +72,7 @@ export function GestionDiasPage() {
           <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
         </div>
       ) : (
-        <>
+        <div className="space-y-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6 lg:space-y-0">
           <section>
             <h2 className="mb-2 text-sm font-bold text-slate-700">Días inscritos</h2>
             {inscripciones && inscripciones.length > 0 ? (
@@ -146,7 +146,7 @@ export function GestionDiasPage() {
               </p>
             )}
           </section>
-        </>
+        </div>
       )}
     </div>
   );

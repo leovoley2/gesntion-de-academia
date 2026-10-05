@@ -67,8 +67,8 @@ export function HorariosPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-6 p-4 pb-24">
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="pagina pagina-dos-columnas">
+      <section className="panel-lateral rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="mb-3 flex items-center gap-2 font-bold text-slate-800">
           <Plus className="h-5 w-5 text-brand-600" /> Nueva clase grupal
         </h2>
@@ -161,7 +161,7 @@ export function HorariosPage() {
             <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
           </div>
         ) : horarios && horarios.length > 0 ? (
-          <ul className="space-y-2">
+          <ul className="lista-tarjetas">
             {horarios.map((h: HorarioConDatos) => (
               <li key={h.id} className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
                 <div className="flex items-center justify-between gap-2">

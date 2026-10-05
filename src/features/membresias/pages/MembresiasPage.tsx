@@ -90,8 +90,8 @@ export function MembresiasPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-6 p-4 pb-24">
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="pagina pagina-dos-columnas">
+      <section className="panel-lateral rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="mb-3 flex items-center gap-2 font-bold text-slate-800">
           <Plus className="h-5 w-5 text-brand-600" /> Asignar membresía
         </h2>
@@ -181,7 +181,7 @@ export function MembresiasPage() {
             <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
           </div>
         ) : membresias && membresias.length > 0 ? (
-          <ul className="space-y-2">
+          <ul className="lista-tarjetas">
             {membresias.map((m) => (
               <li
                 key={m.id}

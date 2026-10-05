@@ -115,7 +115,7 @@ export function CalendarioReservaPersonalizada({
   }
 
   return (
-    <div className="mx-auto w-full max-w-md px-3 pb-32">
+    <div className="mx-auto w-full max-w-md px-3 pb-32 lg:max-w-none lg:px-0">
       {/* Selector de modalidad: solo / dúo / grupo */}
       <section className="pt-4">
         <h2 className="mb-1 flex items-center gap-2 text-lg font-bold text-slate-800">
@@ -124,7 +124,7 @@ export function CalendarioReservaPersonalizada({
         <p className="mb-3 text-xs text-slate-400">
           Elige la modalidad. El precio es por persona.
         </p>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2 xl:grid-cols-4">
           {MODALIDADES_RESERVA.map((m) => {
             const p = precioModalidad(tarifas, m.valor);
             const activo = modalidad === m.valor;
@@ -174,7 +174,7 @@ export function CalendarioReservaPersonalizada({
               })}
             </h3>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
               {slots.map((bloque) => {
                 const elegido = seleccion?.id === bloque.id;
                 return (
@@ -201,7 +201,7 @@ export function CalendarioReservaPersonalizada({
 
       {/* Barra de confirmación fija */}
       {seleccion && (
-        <div className="fixed inset-x-0 bottom-16 z-20 mx-auto max-w-md px-3">
+        <div className="fixed inset-x-0 bottom-16 z-20 mx-auto max-w-md px-3 lg:bottom-6 lg:left-64">
           <div className="rounded-2xl border border-brand-200 bg-white p-3 shadow-lg">
             <p className="text-xs text-slate-500">Has elegido</p>
             <p className="text-sm font-semibold text-slate-800">

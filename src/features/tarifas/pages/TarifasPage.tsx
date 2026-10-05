@@ -25,7 +25,7 @@ export function TarifasPage() {
     : entrenadores?.filter((e) => e.id === session?.user.id);
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-4 p-4 pb-24">
+    <div className="pagina space-y-4">
       <h1 className="flex items-center gap-2 pt-2 text-lg font-bold text-slate-800">
         <DollarSign className="h-5 w-5 text-brand-600" /> Tarifas personalizadas
       </h1>
@@ -42,7 +42,11 @@ export function TarifasPage() {
           Aún no hay entrenadores. Créalos en Usuarios y aquí podrás fijar sus tarifas.
         </p>
       ) : (
-        visibles.map((e) => <FichaEntrenador key={e.id} entrenador={e} />)
+        <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0 2xl:grid-cols-3">
+          {visibles.map((e) => (
+            <FichaEntrenador key={e.id} entrenador={e} />
+          ))}
+        </div>
       )}
     </div>
   );

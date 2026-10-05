@@ -97,9 +97,9 @@ export function PagosPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-6 p-4 pb-24">
+    <div className="pagina pagina-dos-columnas">
       {/* Reporte de ingresos */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="ancho-completo rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <p className="flex items-center gap-1.5 text-xs text-slate-400">
           <TrendingUp className="h-4 w-4 text-green-600" /> Ingresos aprobados este mes
         </p>
@@ -109,7 +109,7 @@ export function PagosPage() {
       </div>
 
       {/* Registrar pago */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <section className="panel-lateral rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="mb-3 flex items-center gap-2 font-bold text-slate-800">
           <Plus className="h-5 w-5 text-brand-600" /> Registrar pago
         </h2>
@@ -201,7 +201,7 @@ export function PagosPage() {
             <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
           </div>
         ) : pagos && pagos.length > 0 ? (
-          <ul className="space-y-2">
+          <ul className="lista-tarjetas">
             {pagos.map((p) => (
               <li key={p.id} className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
                 <div className="flex items-center justify-between gap-2">
@@ -219,6 +219,7 @@ export function PagosPage() {
                   </div>
                 </div>
 
+                {(p.comprobante_url || p.estado === 'pendiente') && (
                 <div className="mt-2 flex items-center gap-2 border-t border-slate-100 pt-2">
                   {p.comprobante_url && (
                     <button
@@ -256,6 +257,7 @@ export function PagosPage() {
                     </div>
                   )}
                 </div>
+                )}
               </li>
             ))}
           </ul>

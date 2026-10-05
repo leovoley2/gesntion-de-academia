@@ -133,7 +133,7 @@ export function InscripcionPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-4 p-4 pb-24">
+    <div className="pagina-media space-y-4">
       <header className="flex items-center gap-2 pt-2">
         {paso !== 'tipo' && (
           <button
@@ -291,7 +291,7 @@ function PasoPlan({ onElegir }: { onElegir: (p: Plan) => void }) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
       {planes?.map((p) => (
         <button
           key={p.id}

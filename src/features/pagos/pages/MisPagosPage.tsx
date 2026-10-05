@@ -79,8 +79,8 @@ export function MisPagosPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-6 p-4 pb-24">
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="pagina pagina-dos-columnas">
+      <section className="panel-lateral rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="mb-1 flex items-center gap-2 font-bold text-slate-800">
           <Upload className="h-5 w-5 text-brand-600" /> Registrar mi pago
         </h2>
@@ -169,7 +169,7 @@ export function MisPagosPage() {
             <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
           </div>
         ) : pagos && pagos.length > 0 ? (
-          <ul className="space-y-2">
+          <ul className="lista-tarjetas">
             {pagos.map((p) => (
               <li key={p.id} className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
                 <div className="flex items-center justify-between">

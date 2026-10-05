@@ -37,7 +37,7 @@ export function NuevosIngresosPage() {
   });
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-4 p-4 pb-24">
+    <div className="pagina space-y-4">
       <h1 className="flex items-center gap-2 pt-2 text-lg font-bold text-slate-800">
         <UserPlus className="h-5 w-5 text-brand-600" /> Nuevos ingresos
         {solicitudes && solicitudes.length > 0 && (
@@ -56,7 +56,7 @@ export function NuevosIngresosPage() {
           No hay solicitudes pendientes. Cuando alguien se inscriba aparecerá aquí.
         </p>
       ) : (
-        <ul className="space-y-3">
+        <ul className="lista-tarjetas">
           {solicitudes.map((s) => (
             <TarjetaSolicitud
               key={s.id}

@@ -11,3 +11,36 @@ body,
 body {
   -webkit-tap-highlight-color: transparent;
 }
+
+/*
+ * Diseño responsive compartido por las páginas.
+ * Móvil: una columna estrecha (max-w-md). Escritorio (lg+): el contenido usa el
+ * ancho disponible — formulario a la izquierda y listado a la derecha, y las
+ * listas de tarjetas en rejilla — para no tener que hacer scroll.
+ */
+@layer components {
+  /* Contenedor de página: estrecho en móvil, ancho en escritorio. */
+  .pagina {
+    @apply mx-auto w-full max-w-md p-4 pb-24 lg:max-w-7xl lg:px-8 lg:pb-10 lg:pt-6;
+  }
+  /* Variante para flujos tipo asistente (inscripción) que no conviene estirar. */
+  .pagina-media {
+    @apply mx-auto w-full max-w-md p-4 pb-24 lg:max-w-4xl lg:px-8 lg:pb-10 lg:pt-6;
+  }
+  /* Formulario (1ª columna) + listado (2ª columna) en escritorio. */
+  .pagina-dos-columnas {
+    @apply space-y-6 lg:grid lg:grid-cols-[minmax(320px,400px)_minmax(0,1fr)] lg:items-start lg:gap-8 lg:space-y-0;
+  }
+  /* El formulario queda fijo mientras se recorre el listado. */
+  .panel-lateral {
+    @apply lg:sticky lg:top-6;
+  }
+  /* Elemento que ocupa las dos columnas (cabeceras, resúmenes). */
+  .ancho-completo {
+    @apply lg:col-span-2;
+  }
+  /* Lista de tarjetas: apilada en móvil, rejilla en escritorio. */
+  .lista-tarjetas {
+    @apply space-y-2 lg:grid lg:grid-cols-2 lg:items-start lg:gap-3 lg:space-y-0 2xl:grid-cols-3;
+  }
+}
