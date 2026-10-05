@@ -39,9 +39,10 @@ npm test          # unitarios (Vitest, en hora de Perú): fechas, paginación,
                   # contraseñas, precio de paquetes, bloques de disponibilidad, menú
 ```
 
-**Regresión de la base de datos** (`supabase/tests/regresiones.sql`): 46 casos
+**Regresión de la base de datos** (`supabase/tests/regresiones.sql`): 52 casos
 sobre RLS, triggers y RPC (bugs 1–6 de la auditoría, métricas/reportes,
-vencimiento diario, anti-escalada de rol, qué ve cada rol). Crea sus propios usuarios y datos y
+vencimiento diario de mensualidades y paquetes, anti-escalada de rol, qué ve
+cada rol). Crea sus propios usuarios y datos y
 termina en `ROLLBACK`, así que se puede ejecutar contra producción sin dejar rastro:
 
 ```bash

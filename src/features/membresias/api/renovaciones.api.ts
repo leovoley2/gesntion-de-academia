@@ -30,7 +30,7 @@ export async function renovarMembresia(matriculaId: string, pagoId?: string): Pr
   if (error) throw error;
 }
 
-/** Marca vencidas las mensualidades caducadas; devuelve cuántas. */
+/** Marca vencidas las membresías con fecha de fin pasada (mensualidades y paquetes); devuelve cuántas. */
 export async function actualizarVencimientos(): Promise<number> {
   const { data, error } = await supabase.rpc('actualizar_vencimientos');
   if (error) throw error;

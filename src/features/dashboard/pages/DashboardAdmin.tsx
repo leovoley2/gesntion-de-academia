@@ -19,7 +19,7 @@ import { actualizarVencimientos } from '../../membresias/api/renovaciones.api';
 
 export function DashboardAdmin() {
   const { perfil } = useAuth();
-  // Al abrir el panel, marca como vencidas las mensualidades caducadas
+  // Al abrir el panel, marca como vencidas las membresías caducadas (mensualidades y paquetes)
   // y luego trae las métricas ya consistentes.
   const { data: m } = useQuery({
     queryKey: ['metricas-admin'],

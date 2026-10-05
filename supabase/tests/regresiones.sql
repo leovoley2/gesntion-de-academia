@@ -2,7 +2,7 @@
 -- SUITE DE REGRESIÓN DE LA BASE DE DATOS (RLS, triggers y RPC)
 --
 -- Cubre los bugs 1–6 de la auditoría (2026-10-04), las funciones de
--- escalabilidad y qué ve cada rol (46 casos). Crea sus propios usuarios y datos de prueba, y TODO
+-- escalabilidad, vencimientos y qué ve cada rol (52 casos). Crea sus propios usuarios y datos de prueba, y TODO
 -- se deshace con el ROLLBACK final: se puede ejecutar contra producción
 -- sin dejar rastro.
 --
@@ -262,6 +262,36 @@ select pg_temp.afirmar('escala: vencimiento diario programado en pg_cron',
 select pg_temp.como('10000000-0000-4000-8000-000000000001');
 select pg_temp.debe_fallar('seguridad: un alumno no puede hacerse administrador', $q$
   update perfiles set rol = 'administrador' where id = '10000000-0000-4000-8000-000000000001' $q$);
+
+-- ============================================================
+-- VENCIMIENTOS — mensualidades Y paquetes vencen en su fecha de fin
+-- (fecha_fin < hoy en Perú; el último día todavía vale)
+-- ============================================================
+select pg_temp.como(null);
+insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data) values
+  ('30000000-0000-4000-8000-000000000003', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'test-alum3@regresion.local', '{"nombre_completo":"T Alumno Vencimientos"}');
+insert into matriculas_membresias (id, alumno_id, tipo_membresia, estado, clases_totales, clases_disponibles, fecha_fin) values
+  ('c1000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000003', 'mensual',        'activa', 8, 0, (now() at time zone 'America/Lima')::date - 1),
+  ('c2000000-0000-4000-8000-000000000002', '30000000-0000-4000-8000-000000000003', 'paquete_clases', 'activa', 8, 3, (now() at time zone 'America/Lima')::date - 1),
+  ('c3000000-0000-4000-8000-000000000003', '30000000-0000-4000-8000-000000000003', 'personalizado',  'activa', 4, 2, (now() at time zone 'America/Lima')::date - 1),
+  ('c4000000-0000-4000-8000-000000000004', '30000000-0000-4000-8000-000000000003', 'paquete_clases', 'activa', 8, 8, (now() at time zone 'America/Lima')::date),
+  ('c5000000-0000-4000-8000-000000000005', '30000000-0000-4000-8000-000000000003', 'personalizado',  'activa', 4, 4, null);
+select public._vencer_mensualidades();
+select pg_temp.afirmar('vence: mensualidad pasada su fecha de fin',
+  (select estado = 'vencida' from matriculas_membresias where id = 'c1000000-0000-4000-8000-000000000001'));
+select pg_temp.afirmar('vence: paquete de clases pasada su fecha de fin, aunque le queden clases',
+  (select estado = 'vencida' from matriculas_membresias where id = 'c2000000-0000-4000-8000-000000000002'));
+select pg_temp.afirmar('vence: paquete personalizado pasada su fecha de fin, aunque le queden sesiones',
+  (select estado = 'vencida' from matriculas_membresias where id = 'c3000000-0000-4000-8000-000000000003'));
+select pg_temp.afirmar('vence: el último día (fecha de fin = hoy) el paquete sigue activo',
+  (select estado = 'activa' from matriculas_membresias where id = 'c4000000-0000-4000-8000-000000000004'));
+select pg_temp.afirmar('vence: un paquete sin fecha de fin no vence',
+  (select estado = 'activa' from matriculas_membresias where id = 'c5000000-0000-4000-8000-000000000005'));
+-- Devolver un crédito (p. ej. al cancelar) no debe reactivar un paquete vencido por fecha.
+select public.reponer_un_credito('30000000-0000-4000-8000-000000000003', array['personalizado']::tipo_membresia[]);
+select pg_temp.afirmar('vence: devolver un crédito no reactiva un paquete vencido por fecha',
+  (select estado = 'vencida' from matriculas_membresias where id = 'c3000000-0000-4000-8000-000000000003'));
+select pg_temp.como('10000000-0000-4000-8000-000000000001');
 
 -- ============================================================
 -- VISIBILIDAD POR ROL (migración 0013: mismas reglas, solo optimizadas)
