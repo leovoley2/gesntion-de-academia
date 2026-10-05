@@ -41,6 +41,42 @@ Entra a https://supabase.com/dashboard/project/qsflpztuebiqtfdispid
 6. **MFA para administradores (recomendado):** activa MFA/2FA para las cuentas de
    administrador desde Authentication.
 
+## Recuperación de contraseña
+
+La app ya trae el flujo completo:
+
+- **Login → "¿Olvidaste tu contraseña?"** (`/recuperar`): envía un enlace al correo.
+- El enlace abre **`/restablecer`**, donde el usuario crea su nueva contraseña.
+- **Mi cuenta** (`/cuenta`): cualquier usuario cambia su contraseña (pide la actual).
+- **Respaldo del admin:** Panel → Usuarios → Editar → "Nueva contraseña". Usa la
+  Edge Function `restablecer-password` (solo administradores). Sirve si el correo
+  no llega.
+
+### Para que los correos lleguen (hacerlo una vez, en el panel de Supabase)
+
+El correo integrado de Supabase es solo de prueba: envía muy pocos correos por
+hora y únicamente a miembros del equipo del proyecto. Para que les llegue a los
+alumnos hay que conectar el Gmail de la academia (`arenavoleibolclub@gmail.com`):
+
+1. **Gmail → Contraseña de aplicación.** En la cuenta de Google de
+   arenavoleibolclub@gmail.com activa la *Verificación en 2 pasos* y luego crea una
+   *Contraseña de aplicación* (myaccount.google.com → Seguridad → Contraseñas de
+   aplicaciones). Son 16 letras; no es tu contraseña normal de Gmail.
+2. **Supabase → Authentication → Emails → SMTP Settings → Enable custom SMTP:**
+   - Sender email: `arenavoleibolclub@gmail.com` · Sender name: `Arena Voleibol Club`
+   - Host: `smtp.gmail.com` · Port: `587`
+   - Username: `arenavoleibolclub@gmail.com` · Password: la contraseña de aplicación
+3. **Supabase → Authentication → URL Configuration:**
+   - Site URL: `https://gesntion-de-academia.vercel.app`
+   - Redirect URLs: añade `https://gesntion-de-academia.vercel.app/**` y
+     `http://localhost:5199/**`
+4. **Supabase → Authentication → Emails → Templates → Reset Password:** asunto
+   `Crea tu nueva contraseña · Arena Voleibol Club` y pega el HTML de
+   `supabase/email-templates/restablecer-contrasena.html`.
+
+Gmail permite unos 500 correos al día, de sobra para la academia. "Confirm email"
+puede seguir desactivado: no afecta a la recuperación.
+
 ## Notas del linter de seguridad
 
 Las advertencias "SECURITY DEFINER function executable" sobre `mi_rol`,

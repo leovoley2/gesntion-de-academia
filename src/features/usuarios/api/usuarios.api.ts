@@ -70,6 +70,18 @@ export async function actualizarUsuario(id: string, d: DatosEdicion): Promise<vo
   if (error) throw error;
 }
 
+/**
+ * Fija una contraseña nueva a otro usuario vía Edge Function (solo admin).
+ * Respaldo para quien olvidó la suya y no recibe el correo de recuperación.
+ */
+export async function restablecerPassword(id: string, password: string): Promise<void> {
+  const { data, error } = await supabase.functions.invoke('restablecer-password', {
+    body: { id, password },
+  });
+  if (error) throw new Error(await mensajeDeFuncion(error));
+  if (data?.error) throw new Error(data.error);
+}
+
 /** Elimina un usuario por completo (cuenta auth + datos) vía Edge Function. */
 export async function eliminarUsuario(id: string): Promise<void> {
   const { data, error } = await supabase.functions.invoke('eliminar-usuario', {

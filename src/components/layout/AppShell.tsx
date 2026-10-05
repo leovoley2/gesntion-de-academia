@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { LogOut, CircleDot } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { LogOut, CircleDot, UserRound } from 'lucide-react';
 import { BottomNav } from './BottomNav';
 import { SideNav } from './SideNav';
 
@@ -24,13 +25,22 @@ export function AppShell({ children }: { children: ReactNode }) {
               <p className="text-xs capitalize text-slate-400">{perfil?.rol ?? ''}</p>
             </div>
           </div>
-          <button
-            onClick={cerrarSesion}
-            className="rounded-lg p-2 text-slate-500 active:bg-slate-100"
-            aria-label="Cerrar sesión"
-          >
-            <LogOut className="h-5 w-5" />
-          </button>
+          <div className="flex items-center gap-1">
+            <Link
+              to="/cuenta"
+              className="rounded-lg p-2 text-slate-500 active:bg-slate-100"
+              aria-label="Mi cuenta"
+            >
+              <UserRound className="h-5 w-5" />
+            </Link>
+            <button
+              onClick={cerrarSesion}
+              className="rounded-lg p-2 text-slate-500 active:bg-slate-100"
+              aria-label="Cerrar sesión"
+            >
+              <LogOut className="h-5 w-5" />
+            </button>
+          </div>
         </header>
 
         <main className="flex-1 overflow-y-auto">{children}</main>

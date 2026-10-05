@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import type { Session } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabaseClient';
+import { supabase, vieneDeRecuperacion, errorEnlaceAuth } from '../lib/supabaseClient';
 import type { Perfil } from '../types/database.types';
 
 interface AuthState {
@@ -16,6 +17,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [perfil, setPerfil] = useState<Perfil | null>(null);
   const [cargando, setCargando] = useState(true);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  // Si Supabase devolvió el enlace de recuperación a otra ruta (p. ej. la raíz,
+  // cuando /restablecer no está en las Redirect URLs), lo llevamos a su página.
+  useEffect(() => {
+    if ((vieneDeRecuperacion || errorEnlaceAuth) && pathname !== '/restablecer') {
+      navigate('/restablecer', { replace: true });
+    }
+    // Solo al cargar la app: después el usuario navega con normalidad.
+  }, []);
 
   async function cargarPerfil(userId: string) {
     const { data } = await supabase

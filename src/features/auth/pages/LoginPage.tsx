@@ -79,6 +79,12 @@ export function LoginPage() {
           />
         </div>
 
+        <div className="-mt-2 text-right">
+          <Link to="/recuperar" className="text-xs font-medium text-brand-600">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
+
         {error && <p className="text-sm text-red-600">{error}</p>}
 
         <button

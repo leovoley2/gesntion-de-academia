@@ -6,6 +6,7 @@ import {
   crearUsuario,
   actualizarUsuario,
   eliminarUsuario,
+  restablecerPassword,
   type NuevoUsuario,
   type DatosEdicion,
 } from '../api/usuarios.api';
@@ -14,6 +15,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { Badge } from '../../../components/ui/Badge';
 import { CargarMas } from '../../../components/ui/CargarMas';
 import { usePaginado } from '../../../lib/paginacion';
+import { MIN_PASSWORD, validarPassword } from '../../auth/password';
 
 const ROLES: RolUsuario[] = ['alumno', 'entrenador', 'administrador'];
 
@@ -179,10 +181,23 @@ function FilaUsuario({ perfil }: { perfil: Perfil }) {
     telefono: perfil.telefono,
     rol: perfil.rol,
   });
+  // Contraseña nueva opcional: vacía = no se toca.
+  const [nuevaPassword, setNuevaPassword] = useState('');
 
   const guardar = useMutation({
-    mutationFn: () => actualizarUsuario(perfil.id, datos),
+    mutationFn: async () => {
+      if (nuevaPassword) {
+        const problema = validarPassword(nuevaPassword);
+        if (problema) throw new Error(problema);
+      }
+      await actualizarUsuario(perfil.id, datos);
+      if (nuevaPassword) await restablecerPassword(perfil.id, nuevaPassword);
+    },
     onSuccess: () => {
+      if (nuevaPassword) {
+        alert(`Contraseña actualizada. Compártela con ${perfil.nombre_completo} por un medio privado.`);
+      }
+      setNuevaPassword('');
       setEditando(false);
       qc.invalidateQueries({ queryKey: ['perfiles'] });
     },
@@ -219,6 +234,21 @@ function FilaUsuario({ perfil }: { perfil: Perfil }) {
             <option key={r} value={r} className="capitalize">{r}</option>
           ))}
         </select>
+        {!esYo && (
+          <div>
+            <input
+              type="text"
+              autoComplete="new-password"
+              value={nuevaPassword}
+              onChange={(e) => setNuevaPassword(e.target.value)}
+              placeholder={`Nueva contraseña (opcional, mín. ${MIN_PASSWORD})`}
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-brand-400"
+            />
+            <p className="mt-1 text-xs text-slate-400">
+              Solo si el usuario olvidó la suya. Déjalo vacío para no cambiarla.
+            </p>
+          </div>
+        )}
         {datos.rol === 'entrenador' && (
           <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">
             Las tarifas de clases personalizadas se gestionan en{' '}

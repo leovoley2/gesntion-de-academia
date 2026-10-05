@@ -13,6 +13,7 @@ import {
   CalendarClock,
   BarChart3,
   ClipboardList,
+  UserRound,
 } from 'lucide-react';
 import type { RolUsuario } from '../../types/database.types';
 
@@ -45,4 +46,6 @@ export const ITEMS_NAV: ItemNav[] = [
   { to: '/usuarios', label: 'Usuarios', Icon: Users, roles: ['administrador'], movil: true },
   { to: '/sedes', label: 'Sedes', Icon: MapPin, roles: ['administrador'], movil: true },
   { to: '/reportes', label: 'Reportes', Icon: BarChart3, roles: ['administrador'] },
+  // En móvil se llega desde el icono de la cabecera.
+  { to: '/cuenta', label: 'Mi cuenta', Icon: UserRound, roles: ['administrador', 'entrenador', 'alumno'] },
 ];

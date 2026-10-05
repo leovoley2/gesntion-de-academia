@@ -4,6 +4,9 @@ import { RoleRoute } from './routes/RoleRoute';
 import { AppShell } from './components/layout/AppShell';
 import { LoginPage } from './features/auth/pages/LoginPage';
 import { RegistroPage } from './features/auth/pages/RegistroPage';
+import { RecuperarPage } from './features/auth/pages/RecuperarPage';
+import { RestablecerPage } from './features/auth/pages/RestablecerPage';
+import { CuentaPage } from './features/auth/pages/CuentaPage';
 import { TerminosPage } from './features/legal/TerminosPage';
 import { PrivacidadPage } from './features/legal/PrivacidadPage';
 import { InscripcionPage } from './features/planes/pages/InscripcionPage';
@@ -28,6 +31,8 @@ export default function App() {
       {/* Públicas */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/registro" element={<RegistroPage />} />
+      <Route path="/recuperar" element={<RecuperarPage />} />
+      <Route path="/restablecer" element={<RestablecerPage />} />
       <Route path="/terminos" element={<TerminosPage />} />
       <Route path="/privacidad" element={<PrivacidadPage />} />
 
@@ -41,6 +46,7 @@ export default function App() {
           }
         >
           <Route index element={<DashboardRouter />} />
+          <Route path="cuenta" element={<CuentaPage />} />
 
           {/* Solo entrenador / administrador */}
           <Route element={<RoleRoute permitidos={['entrenador', 'administrador']} />}>

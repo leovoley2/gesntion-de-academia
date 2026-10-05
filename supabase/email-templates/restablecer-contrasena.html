@@ -1,0 +1,97 @@
+<!--
+  PLANTILLA DE CORREO — Recuperar contraseña (Arena Voleibol Club)
+  -----------------------------------------------------------------
+  Cómo usarla:
+  1. Supabase → Authentication → Emails → Templates → "Reset Password".
+  2. En "Subject" pon:  Crea tu nueva contraseña · Arena Voleibol Club
+  3. Pega TODO el HTML de abajo en el cuerpo del mensaje y guarda.
+  Variables de Supabase usadas: {{ .ConfirmationURL }} y {{ .Email }}.
+  El enlace lleva a /restablecer de la app (pantalla "Crea tu nueva contraseña").
+-->
+<div style="margin:0;padding:0;background-color:#edf6fa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#edf6fa;padding:24px 0;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(10,61,82,0.12);">
+
+          <!-- Encabezado con los colores de la marca -->
+          <tr>
+            <td style="background-color:#0a3d52;padding:28px 24px;text-align:center;">
+              <div style="display:inline-block;width:44px;height:44px;border-radius:50%;border:3px solid #ffb923;line-height:44px;">
+                <span style="display:inline-block;width:8px;height:8px;background:#ffb923;border-radius:50%;"></span>
+              </div>
+              <h1 style="margin:12px 0 0;color:#ffffff;font-size:20px;font-weight:700;letter-spacing:0.3px;">
+                ARENA VOLEIBOL CLUB
+              </h1>
+              <p style="margin:4px 0 0;color:#ffd97a;font-size:12px;letter-spacing:1px;text-transform:uppercase;">
+                Vóley Playa · Lima, Perú
+              </p>
+            </td>
+          </tr>
+
+          <!-- Cuerpo -->
+          <tr>
+            <td style="padding:32px 28px 8px;">
+              <h2 style="margin:0 0 8px;color:#0a3d52;font-size:22px;font-weight:700;">
+                ¿Olvidaste tu contraseña? 🔑
+              </h2>
+              <p style="margin:0 0 16px;color:#475569;font-size:15px;line-height:1.6;">
+                Recibimos una solicitud para restablecer la contraseña de tu cuenta en
+                <strong>Arena Voleibol Club</strong>. Toca el botón y crea una nueva; el enlace vale
+                por 1 hora y solo se puede usar una vez.
+              </p>
+
+              <!-- Botón -->
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px auto;">
+                <tr>
+                  <td align="center" style="border-radius:12px;background-color:#0a5b8a;">
+                    <a href="{{ .ConfirmationURL }}" target="_blank"
+                       style="display:inline-block;padding:14px 32px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;border-radius:12px;">
+                      Crear nueva contraseña
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:8px 0 0;color:#94a3b8;font-size:13px;line-height:1.6;text-align:center;">
+                Si el botón no funciona, copia y pega este enlace en tu navegador:
+              </p>
+              <p style="margin:6px 0 0;color:#0a5b8a;font-size:12px;line-height:1.5;word-break:break-all;text-align:center;">
+                {{ .ConfirmationURL }}
+              </p>
+            </td>
+          </tr>
+
+          <!-- Nota de seguridad -->
+          <tr>
+            <td style="padding:20px 28px 28px;">
+              <div style="background-color:#fef8e7;border-radius:12px;padding:14px 16px;">
+                <p style="margin:0;color:#a36d05;font-size:13px;line-height:1.5;">
+                  Si no pediste este cambio, ignora este correo: tu contraseña actual sigue funcionando
+                  y nadie puede cambiarla sin este enlace.
+                </p>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Pie -->
+          <tr>
+            <td style="background-color:#f8fafc;padding:20px 28px;text-align:center;border-top:1px solid #e2e8f0;">
+              <p style="margin:0 0 4px;color:#64748b;font-size:13px;font-weight:600;">
+                ¿Necesitas ayuda?
+              </p>
+              <p style="margin:0;color:#94a3b8;font-size:12px;line-height:1.6;">
+                WhatsApp +51 929 418 895 · +51 970 607 543<br/>
+                arenavoleibolclub@gmail.com
+              </p>
+              <p style="margin:12px 0 0;color:#cbd5e1;font-size:11px;">
+                Enviado a {{ .Email }} · Arena Voleibol Club, Lima – Perú
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</div>

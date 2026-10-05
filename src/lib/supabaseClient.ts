@@ -19,6 +19,20 @@ if (!supabaseConfigurado) {
   );
 }
 
+/*
+ * El enlace del correo de "olvidé mi contraseña" vuelve con los datos en el
+ * hash (#access_token=…&type=recovery, o #error_code=otp_expired si caducó).
+ * supabase-js lo procesa y limpia la URL de forma asíncrona, así que lo leemos
+ * aquí, al cargar el módulo y antes de crear el cliente.
+ */
+const hashInicial = new URLSearchParams(
+  typeof window !== 'undefined' ? window.location.hash.slice(1) : ''
+);
+/** La app se abrió desde el enlace de recuperación de contraseña. */
+export const vieneDeRecuperacion = hashInicial.get('type') === 'recovery';
+/** Código de error del enlace de Supabase (p. ej. 'otp_expired'), si lo hubo. */
+export const errorEnlaceAuth = hashInicial.get('error_code');
+
 export const supabase = createClient<Database>(
   supabaseUrl || 'https://placeholder.supabase.co',
   supabaseAnonKey || 'placeholder-anon-key',
