@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Check, X, FileWarning, Loader2 } from 'lucide-react';
-import { marcarAsistencia, type AlumnoClase } from '../api/asistencia.api';
+import { etiquetaPlan, marcarAsistencia, type AlumnoClase } from '../api/asistencia.api';
 import type { EstadoAsistencia } from '../../../types/database.types';
 
 interface Props {
@@ -54,8 +54,12 @@ export function ListaAsistencia({ horarioClaseId, fecha, alumnos }: Props) {
               <div className="mb-3 flex items-center justify-between">
                 <div>
                   <p className="font-semibold text-slate-800">{alumno.nombre_completo}</p>
-                  <span className="text-xs uppercase tracking-wide text-slate-400">
-                    {alumno.tipo_membresia.replace('_', ' ')}
+                  <span
+                    className={`text-xs uppercase tracking-wide ${
+                      alumno.tipo_membresia ? 'text-slate-400' : 'font-semibold text-amber-600'
+                    }`}
+                  >
+                    {etiquetaPlan(alumno.tipo_membresia)}
                   </span>
                 </div>
                 {esteGuardando && <Loader2 className="h-5 w-5 animate-spin text-slate-400" />}

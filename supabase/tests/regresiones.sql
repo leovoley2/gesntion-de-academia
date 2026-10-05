@@ -2,7 +2,7 @@
 -- SUITE DE REGRESIÓN DE LA BASE DE DATOS (RLS, triggers y RPC)
 --
 -- Cubre los bugs 1–6 de la auditoría (2026-10-04), las funciones de
--- escalabilidad, vencimientos y qué ve cada rol (52 casos). Crea sus propios usuarios y datos de prueba, y TODO
+-- escalabilidad, vencimientos y qué ve cada rol (55 casos). Crea sus propios usuarios y datos de prueba, y TODO
 -- se deshace con el ROLLBACK final: se puede ejecutar contra producción
 -- sin dejar rastro.
 --
@@ -308,6 +308,23 @@ select pg_temp.afirmar('rls: entrenador ve a los alumnos',
 select pg_temp.afirmar('rls: entrenador ve los inscritos de su clase',
   exists (select 1 from inscripciones_clase where horario_clase_id = '40000000-0000-4000-8000-000000000004'));
 select pg_temp.afirmar('rls: entrenador no ve pagos', not exists (select 1 from pagos));
+-- Lista de asistencia: el entrenador necesita saber el plan de SUS alumnos.
+select pg_temp.como(null);
+insert into inscripciones_clase (horario_clase_id, alumno_id)
+values ('40000000-0000-4000-8000-000000000004', '20000000-0000-4000-8000-000000000002');
+select pg_temp.como('e0000000-0000-4000-8000-00000000000e');
+select pg_temp.afirmar('rls: entrenador ve el plan activo de los alumnos de su clase',
+  exists (select 1 from matriculas_membresias
+          where alumno_id = '20000000-0000-4000-8000-000000000002' and tipo_membresia = 'paquete_clases' and estado = 'activa'));
+select pg_temp.afirmar('rls: entrenador NO ve membresías de alumnos que no están en sus clases',
+  not exists (select 1 from matriculas_membresias where alumno_id = '30000000-0000-4000-8000-000000000003'));
+-- Con RLS, un UPDATE no permitido no da error: simplemente no toca filas.
+update matriculas_membresias set clases_disponibles = 99
+where alumno_id = '20000000-0000-4000-8000-000000000002' and tipo_membresia = 'paquete_clases';
+select pg_temp.como(null);
+select pg_temp.afirmar('rls: entrenador no puede modificar membresías',
+  (select clases_disponibles <> 99 from matriculas_membresias
+   where alumno_id = '20000000-0000-4000-8000-000000000002' and tipo_membresia = 'paquete_clases'));
 select pg_temp.como('a0000000-0000-4000-8000-00000000000a');
 select pg_temp.afirmar('rls: admin ve todos los pagos de prueba',
   (select count(*) from pagos where concepto like 'T %') = 4);

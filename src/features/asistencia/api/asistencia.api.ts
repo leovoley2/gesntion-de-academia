@@ -4,8 +4,15 @@ import type { EstadoAsistencia, TipoMembresia } from '../../../types/database.ty
 export interface AlumnoClase {
   alumno_id: string;
   nombre_completo: string;
-  tipo_membresia: TipoMembresia;
+  /** Plan activo del alumno; null si no tiene ninguno (p. ej. mensualidad vencida). */
+  tipo_membresia: TipoMembresia | null;
   estado?: EstadoAsistencia;
+}
+
+/** Texto del plan que ve el entrenador junto a cada alumno. */
+export function etiquetaPlan(tipo: TipoMembresia | null): string {
+  if (!tipo) return 'sin plan activo';
+  return tipo === 'paquete_clases' ? 'paquete de clases' : tipo;
 }
 
 interface InscritoRow {
@@ -31,7 +38,8 @@ export async function getAlumnosDeClase(
   const ids = (inscritos ?? []).map((i) => i.alumno_id);
   if (ids.length === 0) return [];
 
-  // Tipo de membresía activa por alumno.
+  // Tipo de membresía activa por alumno (el entrenador la ve por RLS solo
+  // para los alumnos de sus clases; migración 0015).
   const { data: membresias } = await supabase
     .from('matriculas_membresias')
     .select('alumno_id, tipo_membresia')
@@ -54,7 +62,7 @@ export async function getAlumnosDeClase(
   return (inscritos ?? []).map((i) => ({
     alumno_id: i.alumno_id,
     nombre_completo: i.alumno?.nombre_completo ?? 'Alumno',
-    tipo_membresia: tipoPorAlumno.get(i.alumno_id) ?? 'mensual',
+    tipo_membresia: tipoPorAlumno.get(i.alumno_id) ?? null,
     estado: estadoPorAlumno.get(i.alumno_id),
   }));
 }
