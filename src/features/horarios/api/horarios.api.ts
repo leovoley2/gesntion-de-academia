@@ -42,8 +42,32 @@ export interface DatosHorario {
   nivel: NivelClase;
 }
 
+/** Duración máxima razonable de una clase grupal (atrapa errores como 06:30–20:30). */
+const MAX_MINUTOS = 4 * 60;
+
+function aMinutos(hora: string): number {
+  const [h, m] = hora.split(':').map(Number);
+  return h * 60 + m;
+}
+
+/** Valida una clase antes de crearla o editarla; devuelve el error o null. */
+export function validarHorario(d: DatosHorario): string | null {
+  if (!d.sede_id) return 'Selecciona una sede.';
+  if (!d.entrenador_id) return 'Selecciona un entrenador.';
+  const duracion = aMinutos(d.hora_fin) - aMinutos(d.hora_inicio);
+  if (duracion <= 0) return 'La hora de fin debe ser después de la de inicio.';
+  if (duracion > MAX_MINUTOS) return 'La clase dura más de 4 horas: revisa la hora de fin.';
+  return null;
+}
+
 export async function crearHorario(d: DatosHorario): Promise<void> {
   const { error } = await supabase.from('horarios_clases').insert(d);
+  if (error) throw error;
+}
+
+/** Cambia una clase existente; los alumnos inscritos se mantienen en ella. */
+export async function actualizarHorario(id: string, d: DatosHorario): Promise<void> {
+  const { error } = await supabase.from('horarios_clases').update(d).eq('id', id);
   if (error) throw error;
 }
 

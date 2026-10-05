@@ -2,7 +2,7 @@
 -- SUITE DE REGRESIÓN DE LA BASE DE DATOS (RLS, triggers y RPC)
 --
 -- Cubre los bugs 1–6 de la auditoría (2026-10-04), las funciones de
--- escalabilidad, vencimientos, admin-entrenador y qué ve cada rol (60 casos). Crea sus propios usuarios y datos de prueba, y TODO
+-- escalabilidad, vencimientos, admin-entrenador y qué ve cada rol (63 casos). Crea sus propios usuarios y datos de prueba, y TODO
 -- se deshace con el ROLLBACK final: se puede ejecutar contra producción
 -- sin dejar rastro.
 --
@@ -351,6 +351,15 @@ select pg_temp.afirmar('rls: entrenador no puede modificar membresías',
 select pg_temp.como('a0000000-0000-4000-8000-00000000000a');
 select pg_temp.afirmar('rls: admin ve todos los pagos de prueba',
   (select count(*) from pagos where concepto like 'T %') = 4);
+select pg_temp.debe_pasar('rls: admin puede editar una clase (Horarios → Editar)', $q$
+  update horarios_clases set hora_fin = '20:30' where id = '40000000-0000-4000-8000-000000000004' $q$);
+select pg_temp.afirmar('rls: la edición de la clase se guardó',
+  (select hora_fin = '20:30' from horarios_clases where id = '40000000-0000-4000-8000-000000000004'));
+select pg_temp.como('e0000000-0000-4000-8000-00000000000e');
+update horarios_clases set hora_fin = '23:00' where id = '40000000-0000-4000-8000-000000000004';
+select pg_temp.como('a0000000-0000-4000-8000-00000000000a');
+select pg_temp.afirmar('rls: un entrenador no puede editar clases',
+  (select hora_fin = '20:30' from horarios_clases where id = '40000000-0000-4000-8000-000000000004'));
 select pg_temp.debe_pasar('rls: admin puede editar perfiles', $q$
   update perfiles set telefono = '999' where id = '20000000-0000-4000-8000-000000000002' $q$);
 select pg_temp.afirmar('rls: la edición del admin se guardó',
